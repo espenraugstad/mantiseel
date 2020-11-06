@@ -1,6 +1,7 @@
 const tokenSecret = require('../localenv').TOKEN_SECRET;
 const crypto = require('crypto');
 
+console.log('LOL');
 
 function generateToken(payload){
     //Header
