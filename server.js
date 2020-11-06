@@ -6,7 +6,6 @@ const encrypt = require('./modules/cryptCompare');
 const server = express();
 const jwt = require('./modules/jwt'); 
 
-
 server.use(bodyParser.json());
 server.use(express.static('public'));
 

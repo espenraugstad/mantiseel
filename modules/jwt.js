@@ -1,6 +1,5 @@
 const tokenSecret = require('../localenv').TOKEN_SECRET;
 const crypto = require('crypto');
-const { nextTick } = require('process');
 
 
 function generateToken(payload){
@@ -49,11 +48,11 @@ function signToken(signString){
 
 //Actually a base64url encoder
 // https://base64.guru/standards/base64url
+// https://medium.com/better-programming/a-practical-guide-for-jwt-authentication-using-nodejs-and-express-d48369e7e6d4
 function urlEncode(encodedString){
-    let urlEncoded = encodedString.replace(/\//g,'_');
-    urlEncoded = urlEncoded.replace(/=/g,'');
-    urlEncoded = urlEncoded.replace(/\+/g,'-');
-    return urlEncoded;
+    return urlEncoded = encodedString.rreplace(/=/g, "")                      
+    .replace(/\+/g, "-")                               
+    .replace(/\//g, "_");
 }
 
 module.exports = {
