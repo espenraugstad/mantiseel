@@ -4,29 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="styling.css">
 </head>
 <body>
     
     <div id="container">
-        <h1>Login</h1>
-        <label for="username">Username: </label>
-        <input id="username" type="text" />
+        <h1>Sign in to your account</h1>
+
+        <form id="login-field-container">
+            <input id="username" type="text" class="login-field" placeholder="Username"/>
+            <input id="password" type="password" class="login-field" placeholder="Password"/>
+        </form>
         <br>
-        <label for="password">Password: </label>
-        <input id="password" type="password" />
-        <br><br>
-        <button id="login">Login</button>
+        <button class="button" id="login">Sign in</button>
+        <button class="button" id="logout">Sign out</button>
     </div>
-        
+    
 </body>
 <script>
+    let logout = document.getElementById('logout');
+    logout.addEventListener('click',async ()=>{
+        let response = await fetch('/logout');
+        console.log(response);
+    });
 
 
     let username = document.getElementById('username');
     let password = document.getElementById('password');
     let login = document.getElementById('login');
-
-    let headers = {};
 
     login.addEventListener('click', async ()=>{
 
@@ -35,29 +40,25 @@
             let authString = window.btoa(`${username.value}:${password.value}`);
             let auth = 'Basic '+authString;
             
-            headers = {
+            let headers = {
                 'content-type': 'application/json',
                 'authorization': auth
             }
 
-            let url = '/api/login';
+            const url = '/api/login';
 
-            let config = {
-                method: 'get',
+            const config = {
+                method: 'post',
                 headers: headers
             }
 
             let response = await fetch(url, config);
-            let data = await response.json();
             if(response.status === 200){
-                console.log('Login successful');
-                sessionStorage.setItem('SID',data);
-                location.href="/random.html";
-
-                
+                location.href = 'random';
             }
         } else {
             console.log('Enter username and password');
+            return;
         }
 
     });

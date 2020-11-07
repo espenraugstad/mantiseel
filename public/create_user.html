@@ -4,23 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>createUser</title>
+    <link rel="stylesheet" href="styling.css">
 </head>
 <body>
     <div id="container">
         <h1>Create User</h1>
-        <label for="username">Username: </label>
-        <input id="username" type="text" />
+        <form id="login-field-container">
+            <input id="username" type="text" class="login-field" placeholder="Username"/>
+            <input id="password" type="password" class="login-field" placeholder="Password"/>
+        </form>
         <br>
-        <label for="password">Password</label>
-        <input id="password" type="password" />
         <br>
-        <br>
-        <button id="createUser">Create User</button>
+        <button class="button" id="createUser">Create User</button>
         <br><br>
+        <br>
         <div id="message"></div>
         
         <p>Already a user?</p>
-        <button id="signIn">Sign In</button>
+        <button class="button" id="signIn">Sign In</button>
     </div>
     
 </body>
