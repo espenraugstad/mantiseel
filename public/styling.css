@@ -5,16 +5,28 @@ body {
   background: white;
 }
 
-.box {
-  width: 300px;
-  padding: 40px;
+.box-outer{
+  background: #989594;
+  width: 400px;
+  height: 500px;
+  padding: 10px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #A68B81;
   text-align: center;
   border-radius: 12px;
+}
+
+.box {
+  border: 2px solid white;
+  border-radius: 8px;
+  width: 390px;
+  height: 490px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .box h1 {
@@ -35,7 +47,7 @@ h1{
   display: block;
   margin: 20px auto;
   text-align: center;
-  border: 2px solid white;
+  border: 2px solid #717171;
   padding: 14px 10px;
   width: 200px;
   outline: none;
@@ -58,10 +70,10 @@ h1{
   display: block;
   margin: 20px auto;
   text-align: center;
-  border: 2px solid white;
+  border: 2px solid #717171;
   padding: 14px 40px;
   outline: none;
-  color:#75625b;
+  color:#717171;
   border-radius: 100px;
   /* border-radius: 24px; */
   transition: 0.25s;
