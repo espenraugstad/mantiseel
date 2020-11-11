@@ -8,60 +8,18 @@
 </head>
 <body>
     
-    <div id="container">
-        <h1>Sign in to your account</h1>
-
-        <form id="login-field-container">
-            <input id="username" type="text" class="login-field" placeholder="Username"/>
-            <input id="password" type="password" class="login-field" placeholder="Password"/>
+    <div class="box-outer">
+        <form class="box" method="post">
+            <h1>Login</h1>
+            <br>
+            <input id='username' type="text" name="" placeholder="Username">
+            <input id='password' type="password" name="" placeholder="Password">
+            <br>
+            <input id='login' type="submit" name="" value="Login">
         </form>
-        <br>
-        <button class="button" id="login">Sign in</button>
-        <button class="button" id="logout">Sign out</button>
     </div>
     
 </body>
-<script>
-    let logout = document.getElementById('logout');
-    logout.addEventListener('click',async ()=>{
-        let response = await fetch('/logout');
-        console.log(response);
-    });
-
-
-    let username = document.getElementById('username');
-    let password = document.getElementById('password');
-    let login = document.getElementById('login');
-
-    login.addEventListener('click', async ()=>{
-
-        if(username.value.length != 0 || password.value.length != 0){
-            console.log('Username and password OK');
-            let authString = window.btoa(`${username.value}:${password.value}`);
-            let auth = 'Basic '+authString;
-            
-            let headers = {
-                'content-type': 'application/json',
-                'authorization': auth
-            }
-
-            const url = '/api/login';
-
-            const config = {
-                method: 'post',
-                headers: headers
-            }
-
-            let response = await fetch(url, config);
-            if(response.status === 200){
-                location.href = 'random';
-            }
-        } else {
-            console.log('Enter username and password');
-            return;
-        }
-
-    });
 
 </script>
 </html>

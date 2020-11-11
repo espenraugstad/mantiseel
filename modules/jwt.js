@@ -1,7 +1,7 @@
+//https://jwt.io/
+
 const tokenSecret = require('../localenv').TOKEN_SECRET;
 const crypto = require('crypto');
-
-
 
 function generateToken(payload){
     //Header
@@ -51,7 +51,7 @@ function signToken(signString){
 // https://base64.guru/standards/base64url
 // https://medium.com/better-programming/a-practical-guide-for-jwt-authentication-using-nodejs-and-express-d48369e7e6d4
 function urlEncode(encodedString){
-    return urlEncoded = encodedString.rreplace(/=/g, "")                      
+    return urlEncoded = encodedString.replace(/=/g, "")                      
     .replace(/\+/g, "-")                               
     .replace(/\//g, "_");
 }
