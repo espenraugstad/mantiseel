@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Presentation</title>
+</head>
+<body>
+    <h1>Create New Presentation</h1>
+    <label for="title">Title: </label>
+    <input id="title" type="text" />
+    <br><br>
+    <button id="create">Create</button>
+    <hr>
+    <h1>Slides</h1>
+    <p>Click on the image below to create a new slide.</p>
+    <div id="slideThumbnails">
+        <div id="T1">Title</div>
+        <div id="T2">Image with text</div>
+        <div id="T3">List</div>
+    </div>
+    <hr>
+    <h3>Title Slide</h3>
+    <label for="titleSlide">Enter title: </label>
+    <input id="titleSlide" type="text" />
+    <br><br>
+    <button id="createSlide">Create Slide</button>
+    <br><br>
+    <div id="slidePreview">Preview</div>
+    <hr>
+    <h3>Image With Text Slide</h3>
+    <label for="imageWithTextSlide">Enter text: </label>
+    <textarea id="imageWithTextSlide" type="textarea"></textarea>
+    <br><br>
+    <div>Upload image</div>
+    <br><br>
+    <button id="createSlide">Create Slide</button>
+    <br><br>
+    <div id="slidePreview">Preview</div>
+    <hr>
+    <h3>List Slide</h3>
+    <label for="listSlide">Enter list: </label>
+    <textarea id="listSlide" type="text"></textarea>
+    <br><br>
+    <button id="createSlide">Create Slide</button>
+    <br><br>
+    <div id="slidePreview">Preview</div>
+    <hr>
+    <h3>Slides</h3>
+    <div>Slide 1</div>
+    <div>Slide 2</div>
+</body>
+<script>
+    let title = document.getElementById('title');
+    let create = document.getElementById('create');
+
+    create.addEventListener('click', async ()=>{
+        /* Send til server:
+
+        {title: title}
+        
+        */
+
+        const url = '/api/makePresentation';
+
+        //let token = sessionStorage.getItem('SID');
+        let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VyIjoiZmFuY3lCb2kiLCJpYXQiOiIxNjA0NjcwNTY4MDY4In0.OnFuZ3zkwp-BF1NGZ8y-cg-ds56FZqW4w3IL7wOy6O4';
+
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer '+token
+        }
+
+        let body = {
+            title: title.value
+        }
+
+        const config = {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: headers
+        }
+
+        let response = await fetch(url, config);
+        console.log(response);
+    });
+</script>
+</html>

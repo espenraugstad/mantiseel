@@ -76,9 +76,36 @@ server.get('/access', authorizer, (req, res)=>{
 });
 
 server.post('/api/makePresentation', async (req, res) => {
- 
+    
+    //Får inn i body: et JSON-objekt som inneholder tittel på presentasjonen
+    let title = req.body.title;
 
-    res.status(200).json(response).end();
+    let presentation = {
+        title: title
+    }
+
+    //Får også inn et token i header, som inneholder brukernavn i payloaden
+    let token = req.headers.authorization.split(' ')[1].trim();
+
+    let valid = jwt.validateToken(token);
+    if(valid){
+        //Har nå brukernavn i payload til tokenet
+        let codedUsername = token.split('.')[1];
+        //Decode payload
+        //....
+        //let username = decodedPayload.username;
+        let username = 'fancyBoi';
+        
+        console.log(presentation);
+        db.addPresentation(username, presentation);
+        
+        res.status(200).end();
+
+    }
+    
+
+
+    //res.status(200).json(response).end();
 });
 
 server.post('/api/deletePresentation', async (req, res) => {

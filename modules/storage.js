@@ -11,6 +11,31 @@ class Storage {
         };
     }
 
+    async addPresentation(username, presentation){
+        const client = new pg.Client(this.credentials);
+
+        try {
+            await client.connect();
+
+            const query = {
+                text: 'INSERT INTO public.presentations (id, username, presentation) VALUES (DEFAULT, $1, $2);',
+                values: [username, presentation]
+            }
+
+            try {
+                console.log('Trying to query');
+                let response = await client.query(query);
+                console.log(response);
+                client.end();
+            } catch {
+                console.log('Failed to add presentation to database');
+            }
+
+        } catch(err){
+            console.log(`Create presentation connection failed ${err}`);
+        }
+    }
+
     async getUser(username){
         const client = new pg.Client(this.credentials);
 
@@ -25,6 +50,7 @@ class Storage {
             try {
 
                 let response = await client.query(query);
+                client.end();
                 return response.rows[0];
 
             } catch (err){
