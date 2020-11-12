@@ -39,9 +39,9 @@ body {
 
 h1{
   text-transform: uppercase;
-  color: #717171;
+  color:#989594;
   font-family: sans-serif;
-  font-size: 72px;
+  font-size: 48px;
   font-weight: 700;
 
 }
@@ -104,7 +104,13 @@ h2{
   cursor: pointer;
 }
 
-.box, .buttons input[type="submit"]:hover {
+.box input[type="submit"]:hover {
+  background: #717171;
+  color:white;
+}
+
+
+.buttons input[type="submit"]:hover {
   background: #717171;
   color:white;
 }
