@@ -43,7 +43,7 @@ function validateToken(token){
 
 function signToken(signString){
     return urlEncode(crypto.createHmac('sha256', tokenSecret)
-    .update(signString, 'base64')
+    .update(signString, 'utf-8')
     .digest('base64'));
 }
 

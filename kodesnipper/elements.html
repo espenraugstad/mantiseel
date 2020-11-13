@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styles</title>
+</head>
+<style>
+    h1, h2 {
+        font-family: sans-serif;
+    }
+
+    #container {
+        width: 60%;
+        margin: auto;
+
+    }
+
+    .item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    button {
+        font-size: 16px;
+        border: 0;
+        background: white;
+        padding: 10px 30px;
+        border: 2px solid black;
+        color: #717171;
+        border-radius: 999px;
+        transition: .25s;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #EAE6DF;
+    }
+
+    input{
+        border: 2px solid black;
+        background: white;
+        margin: 20px auto;
+        padding: 14px 10px;
+        width: 200px;
+        color: #75625b;
+        border-radius: 999px;
+    }
+</style>
+
+<body>
+    <div id='container'>
+        <h1>Ace Presentr Elements</h1>
+        <hr>
+        <h2>Button</h2>
+        <div class="item">
+            <div class="element">
+                <button>Button - this is my button</button>
+            </div>
+
+            <pre><code>
+            button{
+                font-size: 16px;
+                border: 0; 
+                background: white;
+                padding: 10px 30px;
+                border: 2px solid black;
+                color:#717171;
+                border-radius: 999px;
+                transition: .25s;
+                cursor: pointer;
+             }
+         
+             button:hover{
+                 background: #EAE6DF;
+             }
+        </code></pre>
+        </div>
+        <hr>
+        <h2>Input-field</h2>
+        <div class='item'>
+            
+            <div class="element">
+                <input type="text" placeholder="MyPlaceholder">
+            </div>
+            <pre><code>
+                input{
+                    border: 2px solid black;
+                    background: white;
+                    margin: 20px auto;
+                    padding: 14px 10px;
+                    width: 200px;
+                    color: #75625b;
+                    border-radius: 999px;
+                }
+    </code></pre>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
