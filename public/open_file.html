@@ -25,7 +25,7 @@
         let freader = new FileReader();
         freader.addEventListener('load', ()=>{
             let imgdata = freader.result;
-            console.log(typeof imgdata);
+            console.log(imgdata);
         });
 
         freader.readAsDataURL(file);

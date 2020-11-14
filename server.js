@@ -72,9 +72,6 @@ const authorizer = async (req, res, next) => {
 }
 
 /* ****************************************** */
-server.get('/access', authorizer, (req, res)=>{
-    res.status(200).end();
-});
 
 server.post('/api/makePresentation', async (req, res) => {
     
@@ -82,30 +79,30 @@ server.post('/api/makePresentation', async (req, res) => {
     let title = req.body.title;
 
     let presentation = {
-        title: title
+        title: title,
+        share: 0, //default value
+        slides: []
     }
 
     //Får også inn et token i header, som inneholder brukernavn i payloaden
-    let token = req.headers.authorization.split(' ')[1].trim();
+    let token = req.headers.authorization.split(' ')[1];
 
     let valid = jwt.validateToken(token);
     if(valid){
-        //Har nå brukernavn i payload til tokenet
-        //let codedUsername = token.split('.')[1];
-        //Decode payload
-
-        //********************* TEST **************/
-        let decodedPayload = decodeToken(token)
-        //let username = decodedPayload.username;
-        let username = 'fancyBoi';
+        let decodedPayload = decodeToken(token);
+        let username = decodedPayload.username;
         
-        await db.addPresentation(username, presentation);
+        let id = await db.addPresentation(username, presentation);
         
-        res.status(200).end();
+        if(id){
+            res.status(200).json({id: id}).end();
+        } else {
+            res.status(500).end();
+        }
 
+    } else {
+        res.status(403).end();
     }
-
-    //res.status(200).json(response).end();
 });
 
 server.post('/api/deletePresentation', async (req, res) => {
@@ -121,9 +118,30 @@ server.post('/api/updatePresentation', async (req, res) => {
 });
 
 server.post('/api/makeSlide', async (req, res) => {
- 
+    let id = req.body.id;
+    let slide = {
+        type: req.body.type,
+        text: req.body.text,
+        image: req.body.image
+    }
 
-    res.status(200).json(response).end();
+    //Får inn et token i header, som inneholder brukernavn i payloaden
+    let token = req.headers.authorization.split(' ')[1];
+
+    let valid = jwt.validateToken(token);
+    if(valid){
+        let result = await db.createSlide(id, slide);
+        
+        if(result){
+            res.status(200).end();
+        } else {
+            res.status(500).end();
+        }
+
+    } else {
+        res.status(403).end();
+    }
+    
 });
 
 server.post('/api/deleteSlide', async (req, res) => {
@@ -155,9 +173,10 @@ server.post('/api/makeUser', async (req, res) => {
 });
 
 server.post('/api/deleteUser', async (req, res) => {
- 
+    //Kun innlogget bruker som kan slette seg selv.
+    //Vil da også slette alle presentasjoner!
 
-    res.status(200).json(response).end();
+    //res.status(200).json(response).end();
 });
 
 server.post('/api/updateUser', async (req, res) => {
@@ -167,9 +186,9 @@ server.post('/api/updateUser', async (req, res) => {
 });
 
 server.post('/api/sharePresentation', async (req, res) => {
- 
+    //
 
-    res.status(200).json(response).end();
+    //res.status(200).json(response).end();
 });
 
 /* PRIVATE PAGES */

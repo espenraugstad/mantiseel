@@ -1,13 +1,3 @@
-//DB JSON-object containing presentations
-let presentations = 
-{
-    presentations: [
-        {},
-        {},
-        {}
-    ]
-};
-
 //Single presentation
 let presentation = 
 {
@@ -20,6 +10,15 @@ let presentation =
     ]
 };
 
+//Slides in DB
+let slides = {
+    slides: [
+        {},
+        {},
+        {}
+    ]
+}
+
 //Single slide
 let slide = 
 {
@@ -30,8 +29,8 @@ let slide =
 
 /* 
 
-Endre databasen til å ha en presentasjon per entry???
+DB:
 
-Da får hver presentasjon sin unike ID => flere presentasjoner kan ha samme navn!
+
 
 */

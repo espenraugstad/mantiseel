@@ -2,7 +2,7 @@ const pg = require('pg');
 
 class Storage {
 
-    constructor(credentials){
+    constructor(credentials) {
         this.credentials = {
             connectionString: credentials,
             ssl: {
@@ -11,34 +11,139 @@ class Storage {
         };
     }
 
-    async getPresentations(username){
+    async tryConnection(client) {
+        try {
+            await client.connect();
+        } catch (err) {
+            console.log(`Connection error: ${err}`);
+            client.end();
+            return err;
+        }
+    }
+
+    //Add slide to a presentation with a given id
+    async createSlide(id, slide) {
+        //Step 1: Get the presentation from the database 
+        let presentation = await this.getPresentationFromID(id);
+
+        //Step 2: Add the slide to the presentation
+        presentation.slides.push(slide);
+
+        //Step 3: Update the presentation in the database
+        //update presentation updatePresentation(id, newTitle <String>, newShare <Number>, newSlides <Array>)
+        let result = await this.updatePresentation({ slides: presentation.slides });
+        return result;
+    }
+
+    async updatePresentation(newData) {
+        const client = new pg.Client(this.credentials);
+
+        const queries = [];
+
+        if (newData.slides) {
+            //Update with new slides
+            queries.push({
+                text: 'UPDATE public.presentations SET slides = $1 WHERE id = 2;',
+                values: [newData.slides]
+            })
+        }
+
+        this.tryConnection(client);
+
+        try {
+            for (let query of queries) {
+                let result = await client.query(query);
+            }
+            client.end();
+            return true;
+        } catch (err) {
+            console.log(`Update presentation failed: ${err}`);
+        }
+
+    }
+
+    async getPresentationFromID(id) {
+        const client = new pg.Client(this.credentials);
+        const query = {
+            text: 'SELECT * FROM public.presentations WHERE id = $1',
+            values: [id]
+        }
+
+        this.tryConnection(client);
+
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result.rows[0];
+        } catch (err) {
+            console.log(`Get presentation error: ${err}`);
+            client.end();
+        }
+
+
+    }
+
+    //Get all presentations based on username  *** INCOMPLETE ***
+    async getPresentations(username) {
         const client = new pg.Client(this.credentials);
         const query = {
             text: 'SELECT * FROM public.presentations WHERE username = $1',
             values: [username]
         }
 
-        try{
+        try {
             await client.connect();
-        } catch(err){
+        } catch (err) {
             console.log(`Get presentation connection error: ${err}`);
             client.end();
             return err;
         }
 
-        try{
+        try {
             let response = await client.query(query);
+            console.log(response);
             return [response.rows[0].id, response.rows[0].presentations];
-        } catch(err){
+        } catch (err) {
             console.log(`Get presentation query error: ${err}`);
             client.end();
         }
     }
 
-    async getUser(username){
+    //Add a new presentation based on username and presentation title. Returns presentation ID
+    async addPresentation(username, presentation) {
         const client = new pg.Client(this.credentials);
 
-        try {
+        //Just add the presentation with the username as a new entry in the database
+        const query = {
+            text: 'INSERT INTO public.presentations (id, username, title, share, slides) VALUES (DEFAULT, $1, $2, $3, $4) RETURNING id',
+            values: [username, presentation.title, presentation.share, presentation.slides]
+        }
+
+        //Connect to database
+        try {
+
+            await client.connect();
+        } catch (err) {
+            console.log(`Add presentation connection error: ${err}`);
+        }
+
+        //Query
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result.rows[0].id;
+
+        } catch (err) {
+            console.log(`Add presentation query error: ${err}`);
+            client.end();
+        }
+    }
+
+    //Get information about a user based on username. Only returns password.
+    async getUser(username) {
+        const client = new pg.Client(this.credentials);
+
+        try {
             await client.connect();
 
             const query = {
@@ -52,58 +157,18 @@ class Storage {
                 client.end();
                 return response.rows[0];
 
-            } catch (err){
+            } catch (err) {
                 console.log(`Failed to retrieve user: ${err}`);
             }
 
-        } catch (err){
+        } catch (err) {
             console.log(`Get user connection failed: ${err}`);
         }
 
     }
 
-    async addPresentation(username, presentation){
-        const client = new pg.Client(this.credentials);
-
-        //1. Find user and get presentations (an array)
-        
-        let [id, presentations] = await this.getPresentations(username);
-        
-        if(presentations instanceof Error){
-            return presentations.message;
-        } else {
-            //2. Add current presentation to presentationsarray (push)
-            presentations.presentations.push(presentation);
-        }
-        
-        //3. Update entry in database
-        // updatePresentation(username, presentationArray)
-        try {
-            await client.connect();
-
-            const query = {
-                text: 'UPDATE public.presentations SET presentations = $1 WHERE id = $2;',
-                values: [presentations, id]
-            }
-
-            try {
-                console.log('Trying to query');
-                console.log(presentations);
-                let response = await client.query(query);
-                console.log(response);
-                client.end();
-            } catch (err){
-                console.log(`Failed to add presentation to database: ${err}`);
-            }
-
-        } catch(err){
-            console.log(`Create presentation connection failed ${err}`);
-        }
-    }
-
-    
-
-    async addUser(username, password){
+    //Adds a user with a given username and password
+    async addUser(username, password) {
         const client = new pg.Client(this.credentials);
 
         try {
@@ -115,10 +180,10 @@ class Storage {
                 values: [username]
             }
 
-            try{
+            try {
 
                 let userFound = await client.query(query1);
-                if (userFound.rows.length === 0){
+                if (userFound.rows.length === 0) {
                     //User does NOT exist
                     //Add user to database
                     const query2 = {
@@ -130,31 +195,31 @@ class Storage {
 
                         let result = await client.query(query2);
                         client.end();
-                        return {msg: 'User added.'};
+                        return { msg: 'User added.' };
 
-                    } catch (err){
+                    } catch (err) {
                         console.log(`Add user failed: ${err}`);
                     }
 
 
                 } else {
                     client.end();
-                    return {msg: 'User already exists'}
+                    return { msg: 'User already exists' }
                 }
-                
 
-            } catch (err){
+
+            } catch (err) {
                 console.log(`Locating user failed: ${err}`);
 
             }
 
-        } catch(err){
-            
+        } catch (err) {
+
             console.log(`User creation, connection error: ${err}`);
-        
+
         }
 
-        
+
     }
 
 }

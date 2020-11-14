@@ -1,8 +1,19 @@
 POST http://localhost:8080/api/makePresentation
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJib2kiOiJmYW5jeSJ9.vngkUQj_KOyp_LD9zmOUWoo4l4MIXlVRybTTL-oT4i8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VybmFtZSI6ImZhbmN5Qm9pIn0.00PpVqFox0Nk4s1AmeO0kn4T9V2VTyC1rwXd99lKZkM
 
 {
-    "title": "And Anotherone"
+    "title": "Min Eksamen"
 }
 
+###
+POST http://localhost:8080/api/makeSlide
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VybmFtZSI6ImZhbmN5Qm9pIn0.00PpVqFox0Nk4s1AmeO0kn4T9V2VTyC1rwXd99lKZkM
+
+{
+    "id": "2",
+    "type": "2",
+    "text": "Mer tekst her",
+    "image": ""
+}
