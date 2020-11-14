@@ -1,27 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open file test</title>
 </head>
-<body>
-    Load image:
-    <input type="file" id="fancyFile">
-    <div>
 
-    </div>
+<body>
+    <h1>Opplasting</h1>
+    <p>Her er koden for hvordan man kan laste opp et bilde og konvertere det til en string som kan sendes til serveren og lagres i databasen 😀</p>
+    <input type="file" id="fileInp" accept="image/*"><br>
     
-    
+
+
 </body>
 <script>
-    let fancyFile = document.getElementById('fancyFile');
-    let fancyImage = document.getElementById('fancyImage');
+    let fileInp = document.getElementById('fileInp');
+    let preview = document.getElementById('preview');
 
-    fancyFile.addEventListener('change', ()=>{
-        let bla = canvas.toDataURL(fancyFile.files[0]);
-        fancyImage.src = 'data:image/png;base64,'+bla;
+    fileInp.addEventListener('change', () => {
+        let file = fileInp.files[0];
+        
+        let freader = new FileReader();
+        freader.addEventListener('load', ()=>{
+            let imgdata = freader.result;
+            console.log(typeof imgdata);
+        });
 
-    });
+        freader.readAsDataURL(file);
+
+    })
+
+
+
 </script>
+
 </html>

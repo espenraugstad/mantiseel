@@ -12,6 +12,7 @@ let presentations =
 let presentation = 
 {
     title: '',
+    share: 0, //0: privat, 1: public, senere: 3: genererer unik delingslink?
     slides: [
         {},
         {},
@@ -27,3 +28,10 @@ let slide =
     image: ''
 };
 
+/* 
+
+Endre databasen til å ha en presentasjon per entry???
+
+Da får hver presentasjon sin unike ID => flere presentasjoner kan ha samme navn!
+
+*/
