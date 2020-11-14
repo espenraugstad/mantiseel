@@ -5,6 +5,7 @@ const storage = require('./modules/storage');
 const encrypt = require('./modules/cryptCompare');
 const server = express();
 const jwt = require('./modules/jwt'); 
+const { decodeToken } = require('./modules/jwt');
 
 server.use(bodyParser.json());
 server.use(express.static('public'));
@@ -90,20 +91,19 @@ server.post('/api/makePresentation', async (req, res) => {
     let valid = jwt.validateToken(token);
     if(valid){
         //Har nå brukernavn i payload til tokenet
-        let codedUsername = token.split('.')[1];
+        //let codedUsername = token.split('.')[1];
         //Decode payload
-        //....
+
+        //********************* TEST **************/
+        let decodedPayload = decodeToken(token)
         //let username = decodedPayload.username;
         let username = 'fancyBoi';
         
-        console.log(presentation);
-        db.addPresentation(username, presentation);
+        await db.addPresentation(username, presentation);
         
         res.status(200).end();
 
     }
-    
-
 
     //res.status(200).json(response).end();
 });
@@ -190,9 +190,8 @@ server.get('/api/login', authenticator, async (req, res) => {
     }    
 });
 
-
-
 server.set('port', (process.env.PORT || 8080));
 server.listen(server.get('port'), function() {
     console.log('server running', server.get('port'));
+    
 });

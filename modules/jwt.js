@@ -36,9 +36,14 @@ function validateToken(token){
     const mySignature = signToken(signString);
 
     //Check if mySignature matches the signature from the received token
-    return mySignature === sign;
+    return mySignature === sign;    
+}
 
-    
+function decodeToken(token){
+    //Get payload
+    let encodedPayload = token.split('.')[1];
+    let payloadBUF = Buffer.from(encodedPayload, 'base64');
+    let payload = payloadBUF.toString('utf-8');
 }
 
 function signToken(signString){
@@ -58,5 +63,6 @@ function urlEncode(encodedString){
 
 module.exports = {
     generateToken, 
-    validateToken
+    validateToken,
+    decodeToken
 };

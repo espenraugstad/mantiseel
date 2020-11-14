@@ -11,28 +11,27 @@ class Storage {
         };
     }
 
-    async addPresentation(username, presentation){
+    async getPresentations(username){
         const client = new pg.Client(this.credentials);
+        const query = {
+            text: 'SELECT * FROM public.presentations WHERE username = $1',
+            values: [username]
+        }
 
-        try {
+        try{
             await client.connect();
-
-            const query = {
-                text: 'INSERT INTO public.presentations (id, username, presentation) VALUES (DEFAULT, $1, $2);',
-                values: [username, presentation]
-            }
-
-            try {
-                console.log('Trying to query');
-                let response = await client.query(query);
-                console.log(response);
-                client.end();
-            } catch {
-                console.log('Failed to add presentation to database');
-            }
-
         } catch(err){
-            console.log(`Create presentation connection failed ${err}`);
+            console.log(`Get presentation connection error: ${err}`);
+            client.end();
+            return err;
+        }
+
+        try{
+            let response = await client.query(query);
+            return [response.rows[0].id, response.rows[0].presentations];
+        } catch(err){
+            console.log(`Get presentation query error: ${err}`);
+            client.end();
         }
     }
 
@@ -62,6 +61,47 @@ class Storage {
         }
 
     }
+
+    async addPresentation(username, presentation){
+        const client = new pg.Client(this.credentials);
+
+        //1. Find user and get presentations (an array)
+        
+        let [id, presentations] = await this.getPresentations(username);
+        
+        if(presentations instanceof Error){
+            return presentations.message;
+        } else {
+            //2. Add current presentation to presentationsarray (push)
+            presentations.presentations.push(presentation);
+        }
+        
+        //3. Update entry in database
+        // updatePresentation(username, presentationArray)
+        try {
+            await client.connect();
+
+            const query = {
+                text: 'UPDATE public.presentations SET presentations = $1 WHERE id = $2;',
+                values: [presentations, id]
+            }
+
+            try {
+                console.log('Trying to query');
+                console.log(presentations);
+                let response = await client.query(query);
+                console.log(response);
+                client.end();
+            } catch (err){
+                console.log(`Failed to add presentation to database: ${err}`);
+            }
+
+        } catch(err){
+            console.log(`Create presentation connection failed ${err}`);
+        }
+    }
+
+    
 
     async addUser(username, password){
         const client = new pg.Client(this.credentials);

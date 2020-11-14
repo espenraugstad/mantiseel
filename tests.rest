@@ -1,0 +1,8 @@
+POST http://localhost:8080/api/makePresentation
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJib2kiOiJmYW5jeSJ9.vngkUQj_KOyp_LD9zmOUWoo4l4MIXlVRybTTL-oT4i8
+
+{
+    "title": "And Anotherone"
+}
+

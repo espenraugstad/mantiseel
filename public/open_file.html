@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open file test</title>
+</head>
+<body>
+    Load image:
+    <input type="file" id="fancyFile">
+    <div>
+
+    </div>
+    
+    
+</body>
+<script>
+    let fancyFile = document.getElementById('fancyFile');
+    let fancyImage = document.getElementById('fancyImage');
+
+    fancyFile.addEventListener('change', ()=>{
+        let bla = canvas.toDataURL(fancyFile.files[0]);
+        fancyImage.src = 'data:image/png;base64,'+bla;
+
+    });
+</script>
+</html>
