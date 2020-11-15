@@ -21,6 +21,46 @@ class Storage {
         }
     }
 
+    //Get all presentations for a user
+    async getPresentations(username){
+
+        const client = new pg.Client(this.credentials);
+        const query = {
+            text: 'SELECT * FROM public.presentations WHERE username = $1;',
+            values: [username]
+        }
+        await this.tryConnection(client);
+
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result.rows;
+        } catch (err) {
+            console.log(`Cannont change share property of presentation: ${err}`);
+            client.end();
+        }
+    }
+
+    //Share/unshare presentation
+    async sharePresentation(id, share) {
+        const client = new pg.Client(this.credentials);
+        const query = {
+            text: 'UPDATE public.presentations SET share = $1 WHERE id = $2;',
+            values: [share, id]
+        }
+        await this.tryConnection(client);
+
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result;
+        } catch (err) {
+            console.log(`Cannont change share property of presentation: ${err}`);
+            client.end();
+        }
+
+    }
+
     //Add slide to a presentation with a given id
     async createSlide(id, slide) {
         //Step 1: Get the presentation from the database 
@@ -31,31 +71,24 @@ class Storage {
 
         //Step 3: Update the presentation in the database
         //update presentation updatePresentation(id, newTitle <String>, newShare <Number>, newSlides <Array>)
-        let result = await this.updatePresentation({ slides: presentation.slides });
+        let result = await this.changeSlides(presentation.slides);
         return result;
     }
 
-    async updatePresentation(newData) {
+    async changeSlides(newSlides) {
         const client = new pg.Client(this.credentials);
 
-        const queries = [];
-
-        if (newData.slides) {
-            //Update with new slides
-            queries.push({
-                text: 'UPDATE public.presentations SET slides = $1 WHERE id = 2;',
-                values: [newData.slides]
-            })
+        const query = {
+            text: 'UPDATE public.presentations SET slides = $1 WHERE id = 2;',
+            values: [newSlides]
         }
 
-        this.tryConnection(client);
+        await this.tryConnection(client);
 
         try {
-            for (let query of queries) {
-                let result = await client.query(query);
-            }
+            let result = await client.query(query);
             client.end();
-            return true;
+            return result;
         } catch (err) {
             console.log(`Update presentation failed: ${err}`);
         }
@@ -69,7 +102,7 @@ class Storage {
             values: [id]
         }
 
-        this.tryConnection(client);
+        await this.tryConnection(client);
 
         try {
             let result = await client.query(query);
@@ -84,7 +117,7 @@ class Storage {
     }
 
     //Get all presentations based on username  *** INCOMPLETE ***
-    async getPresentations(username) {
+    async getPresentationsINCOMPLETE(username) {
         const client = new pg.Client(this.credentials);
         const query = {
             text: 'SELECT * FROM public.presentations WHERE username = $1',

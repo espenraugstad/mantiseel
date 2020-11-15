@@ -186,9 +186,50 @@ server.post('/api/updateUser', async (req, res) => {
 });
 
 server.post('/api/sharePresentation', async (req, res) => {
-    //
+    //Must require presentation ID
+    let id = req.body.id;
+    let share = req.body.share;
+
+    //Får inn et token i header, som inneholder brukernavn i payloaden
+    let token = req.headers.authorization.split(' ')[1];
+
+    let valid = jwt.validateToken(token);
+    if(valid){
+        let result = await db.sharePresentation(id, share);
+        if(result){
+            res.status(200).end();
+        } else {
+            res.status(500).end();
+        }
+
+    } else {
+        res.status(403).end();
+    }
 
     //res.status(200).json(response).end();
+});
+
+server.get('/api/getPresentations', async (req, res)=>{
+    //Får inn et token i header, som inneholder brukernavn i payloaden
+    let token = req.headers.authorization.split(' ')[1];
+
+    let valid = jwt.validateToken(token);
+    if(valid){
+        let decodedPayload = decodeToken(token);
+        let username = decodedPayload.username;
+
+        let result = await db.getPresentations(username);
+        
+        if(result){
+            //console.log(result);
+            res.status(200).json(result).end();
+        } else {
+            res.status(500).end();
+        }
+
+    } else {
+        res.status(403).end();
+    }
 });
 
 /* PRIVATE PAGES */
