@@ -116,32 +116,7 @@ class Storage {
 
     }
 
-    //Get all presentations based on username  *** INCOMPLETE ***
-    async getPresentationsINCOMPLETE(username) {
-        const client = new pg.Client(this.credentials);
-        const query = {
-            text: 'SELECT * FROM public.presentations WHERE username = $1',
-            values: [username]
-        }
-
-        try {
-            await client.connect();
-        } catch (err) {
-            console.log(`Get presentation connection error: ${err}`);
-            client.end();
-            return err;
-        }
-
-        try {
-            let response = await client.query(query);
-            console.log(response);
-            return [response.rows[0].id, response.rows[0].presentations];
-        } catch (err) {
-            console.log(`Get presentation query error: ${err}`);
-            client.end();
-        }
-    }
-
+    
     //Add a new presentation based on username and presentation title. Returns presentation ID
     async addPresentation(username, presentation) {
         const client = new pg.Client(this.credentials);
