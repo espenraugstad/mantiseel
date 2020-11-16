@@ -1,0 +1,77 @@
+
+* {
+    transition:all 0.3s ease-in-out;
+    font-family: sans-serif;
+    color: #6b6b6b;
+}
+
+/*----------- Navbar -----------*/
+.container {
+  clear: both;
+  overflow: auto;
+}
+
+nav {
+    float: right;
+}
+
+.logo .logoImg {
+  float: right;
+  padding-left: 20px;
+}
+
+ul li {
+  color: #989695;
+  display: inline-block; 
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 16px; 
+  font-family: sans-serif;
+}
+
+ul li:hover {
+  color: #6b6b6b;
+  
+}
+
+/*----------- Avatar -----------*/
+.avatar {
+  text-align: center;
+  float: left;
+  padding-right: 150px;
+  padding-left: 25px;
+  padding-top: 25px;
+  
+}
+.avatarImg {
+  vertical-align: middle;
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+  border: 1px solid #6b6b6b;
+
+}
+
+.info {
+  text-align: center;
+  padding-right: 300px;
+  
+}
+/*----------- Presentation Thumbnails -----------*/
+.presentImg {
+  /* border: 1px solid #ddd; */
+  border-radius: 4px;
+  width: 150px;
+
+
+}
+
+img:hover {
+  box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+}
+
+
+/*----------- Buttons -----------*/
+
+
+/*----------- Input -----------*/
