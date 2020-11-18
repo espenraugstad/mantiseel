@@ -1,7 +1,12 @@
 //https://jwt.io/
 
-const tokenSecret = require('../localenv').TOKEN_SECRET;
+const tokenSecret = 'forTesting';
 const crypto = require('crypto');
+
+let token = generateToken({username: 'fancyBoi'});
+//let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VybmFtZSI6ImZhbmN5Qm9pIn0.00PpVqFox0Nk4s1AmeO0kn4T9V2VTyC1rwXd99lKZkM';
+console.log(token);
+decodeToken(token);
 
 function generateToken(payload){
     //Header
@@ -36,7 +41,7 @@ function validateToken(token){
     const mySignature = signToken(signString);
 
     //Check if mySignature matches the signature from the received token
-    return mySignature === sign;    
+    return mySignature === sign;
 }
 
 function decodeToken(token){
@@ -44,7 +49,6 @@ function decodeToken(token){
     let encodedPayload = token.split('.')[1];
     let payloadBUF = Buffer.from(encodedPayload, 'base64');
     let payload = payloadBUF.toString('utf-8');
-    return JSON.parse(payload);
 }
 
 function signToken(signString){
@@ -61,9 +65,3 @@ function urlEncode(encodedString){
     .replace(/\+/g, "-")                               
     .replace(/\//g, "_");
 }
-
-module.exports = {
-    generateToken, 
-    validateToken,
-    decodeToken
-};

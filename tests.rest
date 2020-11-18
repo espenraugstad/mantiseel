@@ -1,0 +1,35 @@
+###
+GET http://localhost:8080/api/getPresentations
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VybmFtZSI6ImZhbmN5Qm9pIn0.00PpVqFox0Nk4s1AmeO0kn4T9V2VTyC1rwXd99lKZkM
+
+###
+POST http://localhost:8080/api/sharePresentation
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VybmFtZSI6ImZhbmN5Qm9pIn0.00PpVqFox0Nk4s1AmeO0kn4T9V2VTyC1rwXd99lKZkM
+
+{
+    "share": 0,
+    "id": 2
+}
+
+###
+POST http://localhost:8080/api/makePresentation
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VybmFtZSI6ImZhbmN5Qm9pIn0.00PpVqFox0Nk4s1AmeO0kn4T9V2VTyC1rwXd99lKZkM
+
+{
+    "title": "Min Eksamen"
+}
+
+###
+POST http://localhost:8080/api/makeSlide
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Imp3dCJ9.eyJ1c2VybmFtZSI6ImZhbmN5Qm9pIn0.00PpVqFox0Nk4s1AmeO0kn4T9V2VTyC1rwXd99lKZkM
+
+{
+    "id": "2",
+    "type": "3",
+    "text": "Mindre tekst her",
+    "image": ""
+}
