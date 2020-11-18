@@ -25,13 +25,13 @@
     </div> -->
 
     <div class="box-outer">
-        <form class="box" method="post">
+        <form class="box" >
             <h2>Create User</h2>
             <br>
             <input id='username' type="text" name="" placeholder="Username">
             <input id='password' type="password" name="" placeholder="Password">
             <br>
-            <input id='login' type="submit" name="" value="Create user">
+            <input id='createUser' type="submit" name="" value="Create user">
         </form>
     </div>
     
@@ -41,15 +41,10 @@
     let username = document.getElementById('username');
     let password = document.getElementById('password');
     let createUser = document.getElementById('createUser');
-    let message = document.getElementById('message');
-
-    let signIn = document.getElementById('signIn');
-
-    signIn.addEventListener('click', ()=>{
-        location.href = 'login.html';
-    });
-
-    createUser.addEventListener('click', async ()=>{
+    
+    createUser.addEventListener('click', async (e)=>{
+        e.preventDefault();
+        console.log('click');
         const url = '/api/makeUser';
         const config = {
             method: 'post',
@@ -64,15 +59,11 @@
 
         let response = await fetch(url, config);
         let responseMessage = await response.json();
-
+        console.log(responseMessage);
         if(responseMessage.msg.includes('added')){
-            message.innerHTML = `User added successfully.`;
-            setTimeout(()=>{
-                location.href = 'login.html';
-            },1000);
-        } else {
-            message.innerHTML = `User already exists. Try again.`;
+            location.href='login.html';
         }
+
         
     });
 </script>

@@ -232,6 +232,21 @@ server.get('/api/getPresentations', async (req, res)=>{
     }
 });
 
+server.get('/api/validUsername', async (req, res)=>{
+    let token = req.headers.authorization.split(' ')[1];
+
+    let valid = jwt.validateToken(token);
+    if(valid){
+        let decodedPayload = decodeToken(token);
+        let username = decodedPayload.username;
+        res.status(200).json({username: username}).end();
+       
+
+    } else {
+        res.status(403).end();
+    }
+});
+
 /* PRIVATE PAGES */
 server.get('/random', authorizer, (req, res, next)=>{
     console.log('Welcome to random');
@@ -240,10 +255,10 @@ server.get('/random', authorizer, (req, res, next)=>{
 /* ALL ENDPOINTS THAT REQUIRE AUTHENTICATION */
 
 //post eller get?
-server.get('/api/login', authenticator, async (req, res) => {
+server.post('/api/login', authenticator, async (req, res) => {
     if(req.login){
         //If login successful - generate token to send along
-        let token = jwt.generateToken({'payload': 'Hello World'});
+        let token = jwt.generateToken({username: req.user.username});
         res.status(200).json(token);
     } else {
         res.status(403).end();

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style_home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap" rel="stylesheet">
+
+    <title>ACE-Presentr ALT</title>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+          <img src="img/logo_navbar2.jpg" class="logoImg"/>
+        </div>
+        <nav>
+          <ul>
+          <li>Home</li>
+          <li>Sign Out</li>
+          </ul>
+        </nav>
+    </div>
+
+    <hr>
+    <br>
+    <div class="avatar">
+        <img src="img/avatar2.png" alt="Avatar" class="avatarImg"> 
+        <p>Username</p>
+    </div>
+    <hr>
+
+
+       
+        
+    <div class="newPresent">
+        <h2>Create New Presentation:</h2>
+        <input type="text" class="presentInput" name="presentInput" value="Title">
+        <button type="button">Create</button>
+    </div>
+    <br>
+
+    <hr>
+
+    <div id="myPresentations">
+        <div>
+            <h3>Eksamenspresentasjon</h3>
+            <p>Private</p>
+        </div>
+     
+        <div>
+            <h3>Min CV</h3>
+            <p>Public</p>
+        </div>
+        
+        <div>
+            <h3>Bilder fra turen</h3>
+            <p>Private</p>
+        </div>
+    </div>
+
+    
+    
+</body>
+<style>
+    #myPresentations{
+        display: flex;
+        flex-direction: column;
+        
+    }
+
+    #myPresentations>div{
+        border-bottom: 1px solid black;
+    }
+</style>
+</html>

@@ -2,8 +2,8 @@ let username = document.getElementById('username');
 let password = document.getElementById('password');
 let login = document.getElementById('login');
 
-login.addEventListener('click', async ()=>{
-
+login.addEventListener('click', async (e)=>{
+    e.preventDefault();
     if(username.value.length != 0 || password.value.length != 0){
         console.log('Username and password OK');
         let authString = window.btoa(`${username.value}:${password.value}`);
@@ -22,8 +22,13 @@ login.addEventListener('click', async ()=>{
         }
 
         let response = await fetch(url, config);
+        let token = await response.json();
+        
+
         if(response.status === 200){
-            location.href = 'dashboard.html';
+            sessionStorage.clear();
+            sessionStorage.setItem('SID', token);
+            location.href = 'home.html';
         }
     } else {
         console.log('Enter username and password');

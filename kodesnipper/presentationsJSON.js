@@ -22,7 +22,8 @@ let slides = {
 //Single slide
 let slide = 
 {
-    type: '1', //or 2 or 3
+    type: '1', //or 2 or 3,
+    theme: '1',
     text: '',
     image: ''
 };
