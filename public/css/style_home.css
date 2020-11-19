@@ -33,15 +33,18 @@ ul li:hover {
 @media(min-width:768px) {
   .container {
     display: flex;
-    width: 1200px;
+    width: 1448px;
+    align-items: center;
+    justify-content: center;
+
   }
   .avatar {
     display: block;
     text-align: center;
     padding-right: 100px;
     /* padding-left: 25px; */
-    padding-top: 40px;
-    flex: 1;
+    /* padding-top: 40px; */
+    /* flex: 1; */
   }
   
   
@@ -53,9 +56,6 @@ ul li:hover {
     border: 1px solid #6b6b6b;
   }
 
-  .overview {
-    flex:2.2; 
-  }
   
   .overview span.top {
     display: flex;
@@ -72,15 +72,19 @@ ul li:hover {
     align-items: center;
     justify-content: center;
   }
-  
-  .thumbnails {
+
+  .inputform {
     display: flex;
-    flex: 2;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  
+  .myPresentations {
+    display: flex;
+    width: 600 px;
     justify-content: space-around;
     text-align: center;  
   }
 
-  .newPresent {
-    font-weight: 200;
-  }
 }
