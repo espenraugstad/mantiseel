@@ -31,17 +31,11 @@
             <p id="username">Username</p>
         </div>
         <div class="newPresent">
-            <h2 class="createPresentation">Create New Presentation:</h2>
-            <div class="inputform">
-                <form>
-                <input type="text" name="presenTitle">
-                <button id="newPresentation" type="submit">Create</button>
-              </form>
-            </div>
+            <h2>Create New Presentation:</h2>
+            <input id="presentationTitle" type="text" class="presentInput" name="presentInput" value="Title">
+            <button id="newPresentation" type="button">Create</button>
         </div>
-    
     </div>
-
     <br><br>
     <hr>
     <div class="overview">
@@ -49,24 +43,15 @@
             <span class="top">Overview:</span>
             <span class="bottom">My Presentations:</span>
         </h2>
-        <div id="presentations" >
-            <!-- <h3>Presentation 1</h3>
-            <p>Private</p>
-            <h3>Presentation 2</h3>
-            <h3>Presentation 3</h3>
-            <h3>Presentation 4</h3>
-            <h3>Presentation 5</h3>
-            <h3>Presentation 6</h3> -->
-           
+        <div id="myPresentations" class="thumbnails">
         </div>
-        
     </div>
 </body>
 <script>
     let presentationTitle = document.getElementById('presentationTitle');
     let newPresentation = document.getElementById('newPresentation');
     let username = document.getElementById('username');
-    let presentations = document.getElementById('presentations');
+    let myPresentations = document.getElementById('myPresentations');
 
     window.onload = function () {
         getUsername();
@@ -94,33 +79,7 @@
         data.reverse();
 
         //Eksempel:
-        let flexElem = null;
-        for(let i = 0; i < data.length; i++){
-            //console.log(data[i]);
-            let presentation = data[i];
-            if(i%4 === 0){
-                flexElem = document.createElement('div');
-                flexElem.classList.add('myPresentations');
-                presentations.appendChild(flexElem);
-            }
-
-            let presentationDiv = document.createElement('div');
-            let html = `
-                    <h3>${presentation.title}</h3>
-                `;
-            if (presentation.share === 0) {
-                html += `
-            <p>Private</p>`;
-            } else {
-                html += `
-            <p>Public</p>`;
-            }
-            presentationDiv.innerHTML = html;
-            flexElem.appendChild(presentationDiv);
-            
-        }
-
-      /*   for (let presentation of data) {
+        for (let presentation of data) {
             let elem = document.createElement('div');
             //elem.classList.add(); //Legg evt. til en klasse
             
@@ -140,7 +99,7 @@
                 localStorage.setItem('pID', presentation.id);
                 location.href = 'create_presentation.html';
             });
-        } */
+        }
 
     }
 

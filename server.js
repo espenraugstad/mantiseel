@@ -45,6 +45,7 @@ const authenticator = async (req, res, next) => {
         req.login = true;
         next();
     } else {
+        console.log('d');
         req.login = false;
         next();
     } 
@@ -256,12 +257,14 @@ server.get('/random', authorizer, (req, res, next)=>{
 
 //post eller get?
 server.post('/api/login', authenticator, async (req, res) => {
+    console.log('e');
     if(req.login){
         //If login successful - generate token to send along
         let token = jwt.generateToken({username: req.user.username});
         res.status(200).json(token);
     } else {
-        res.status(403).end();
+        console.log('f');
+        res.status(403).send('Nope').end();
     }    
 });
 

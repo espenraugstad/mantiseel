@@ -13,16 +13,18 @@ login.addEventListener('click', async (e)=>{
             'content-type': 'application/json',
             'authorization': auth
         }
-
+        
         const url = '/api/login';
-
+       
         const config = {
             method: 'post',
             headers: headers
         }
-
+        console.log('1');
         let response = await fetch(url, config);
+        console.log('2');
         let token = await response.json();
+        console.log('3');
         
 
         if(response.status === 200){
