@@ -42,7 +42,7 @@
     <div id="theme_slide">
         <h1>Select a Theme</h1>
         <div id="select_theme">
-            <input id='theme1' type="submit" name="theme1" value="testse">
+            <input id='theme1' type="submit" name="theme1" value="">
             <input id='theme2' type="submit" name="theme2" value="">
             <input id='theme3' type="submit" name="theme3" value="">
         </div>
@@ -57,10 +57,23 @@
         <input id='add' type="submit" name="add" value="Add">
         <input id='save' type="submit" name="save" value="save">
     </div>
-
-    <div id="slides_container">
-        <h2>Slide 1/1</h2>
+    
+    <div id="numberofslides">
+        <h2>Slide 1</h2>
     </div>
+
+    <hr>
+
+    <div id="slide_Showcase">
+        <h2>test</h2>
+    </div>
+
+    <hr>
+
+    <div id="slides_above">
+    </div>
+
+    <hr>
 
 </body>
 <script>
@@ -78,22 +91,27 @@
     let theme = 1;
     let slide = 1;
 
-    let numberOfSlides = 0;
-
     let color = "#5dc3c1";
 
     theme1.addEventListener('click', function(e) {  
         theme = 1;
         color = "#5dc3c1";
+        document.getElementById("slide_Showcase").innerHTML = html;
+        document.getElementById("textbox").style.background = color;
     });
     theme2.addEventListener('click', function(e) {  
         theme = 2;
         color = "#d67172";
+        document.getElementById("slide_Showcase").innerHTML = html;
+        document.getElementById("textbox").style.background = color;
     });
     theme3.addEventListener('click', function(e) {  
         theme = 3;
         color = "#989594"
+        document.getElementById("slide_Showcase").innerHTML = html;
+        document.getElementById("textbox").style.background = color;
     });
+
 
     slide1.addEventListener('click', function(e) {  
         slide = 1;
@@ -107,54 +125,26 @@
 
 
 
+   
 
     addSlide.addEventListener('click', function(e) {  
-        numberOfSlides++;
-        
-        //outer div
-        let divId = "div"+numberOfSlides;
-        divId = document.createElement("DIV");
-        divId.setAttribute("id", "title_container");
-        document.body.appendChild(divId);
-
-        //upper span
-        let span = document.createElement("SPAN");
-        span.setAttribute("class", "box box-top");
-        document.getElementById("title_container").appendChild(span);
-
-
-        let divInner = document.createElement("DIV");
-        divInner.setAttribute("id", "textbox");
-        document.getElementById("title_container").appendChild(divInner);
-
-
-        //bottom span
-        let spanBottom = document.createElement("SPAN");
-        spanBottom.setAttribute("class", "box box-bottom");
-        document.getElementById("title_container").appendChild(spanBottom);
-        
-        //color
-        document.getElementById("textbox").style.background = color;
-
-        //input field
-        let input = document.createElement("INPUT");
-        input.setAttribute("id", "inputField");
-        input.setAttribute("type", "text");
-        document.body.appendChild(input);
-        document.getElementById("textbox").appendChild(input);
+        let newSlide = document.getElementById("slides_above");
+            newSlide.insertAdjacentHTML("afterbegin", html);
+            document.getElementById("textbox").style.background = color;   
     });
 
     savePresentation.addEventListener('click', function(e) {
-        console.log(inputField.value);
     });
 
 
-
-
-
-
-
-
+    let html = `
+    <div id="title_container">
+        <span class="box box-top"></span><br><br>
+        <div id="textbox">
+            <input id='inputField' type="text">
+        </div>
+        <span class="box box-bottom"></span><br><br>
+    </div>`;
 
 
     //espen kode under------------------------------------------------------------------------------------------------------------------------------
