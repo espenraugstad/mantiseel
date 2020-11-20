@@ -22,6 +22,7 @@ let slides = {
 //Single slide
 let slide = 
 {
+    id: '1', //Increment
     type: '1', //or 2 or 3,
     theme: '1',
     text: '',

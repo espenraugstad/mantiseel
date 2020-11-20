@@ -119,8 +119,9 @@ server.post('/api/updatePresentation', async (req, res) => {
 });
 
 server.post('/api/makeSlide', async (req, res) => {
-    let id = req.body.id;
+    let presentation_id = req.body.presentation_id;
     let slide = {
+        id: req.body.slide_id,
         type: req.body.type,
         text: req.body.text,
         image: req.body.image
@@ -131,7 +132,7 @@ server.post('/api/makeSlide', async (req, res) => {
 
     let valid = jwt.validateToken(token);
     if(valid){
-        let result = await db.createSlide(id, slide);
+        let result = await db.createSlide(presentation_id, slide);
         
         if(result){
             res.status(200).end();
