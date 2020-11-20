@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Basic Presentation Creation</title>
+    <script type="module" defer src="./js/components/creator.js"></script>
+    <style>
+      .smallBox {
+        border: 1px solid black;
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mainBox">
+      <div id="typeSelector">
+        <h3>Layout:</h3>
+        <div id="layouts"></div>
+      </div>
+      <div id="themeSelector">
+        <h3>Theme:</h3>
+        <div id="themes"></div>
+      </div>
+      <div id="content-tools"></div>
+    </div>
+    <br />
+    <button id="save-slide">Save as new slide</button>
+    <button id="delete-slide">Delete slide</button>
+    <button id="getSlidesBTN">Get Slides</button>
+    <br />
+    <hr />
+    <div id="available-slides"></div>
+  </body>
+</html>

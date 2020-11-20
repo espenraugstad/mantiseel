@@ -7,7 +7,7 @@ const server = express();
 const jwt = require('./modules/jwt'); 
 const { decodeToken } = require('./modules/jwt');
 
-server.use(bodyParser.json());
+server.use(bodyParser.json({limit: '50mb'}));
 server.use(express.static('public'));
 
 const credentials = require('./localenv').DATABASE_URL || process.env.DATABASE_URL;
@@ -45,6 +45,7 @@ const authenticator = async (req, res, next) => {
         req.login = true;
         next();
     } else {
+        console.log('d');
         req.login = false;
         next();
     } 
@@ -118,19 +119,14 @@ server.post('/api/updatePresentation', async (req, res) => {
 });
 
 server.post('/api/makeSlide', async (req, res) => {
-    let id = req.body.id;
-    let slide = {
-        type: req.body.type,
-        text: req.body.text,
-        image: req.body.image
-    }
+    let presentation_id = req.body.presentation_id;
 
     //Får inn et token i header, som inneholder brukernavn i payloaden
     let token = req.headers.authorization.split(' ')[1];
 
     let valid = jwt.validateToken(token);
     if(valid){
-        let result = await db.createSlide(id, slide);
+        let result = await db.createSlide(presentation_id, req.body);
         
         if(result){
             res.status(200).end();
@@ -143,6 +139,24 @@ server.post('/api/makeSlide', async (req, res) => {
     }
     
 });
+
+server.delete('/api/deleteSlide', async (req, res) => {
+    //Får inn et token i header, som inneholder brukernavn i payloaden
+    let token = req.headers.authorization.split(' ')[1];
+    let valid = jwt.validateToken(token);
+    if (valid) {
+        const { slide_id, presentation_id } = req.query;
+        let result = await db.deleteSlide(presentation_id, slide_id);
+        
+        if(result){
+            res.status(200).end();
+        } else {
+            res.status(500).end();
+        }
+    } else {
+        res.status(403).end();
+    }
+})
 
 server.post('/api/deleteSlide', async (req, res) => {
  
@@ -247,6 +261,25 @@ server.get('/api/validUsername', async (req, res)=>{
     }
 });
 
+server.get('/api/getSlides/:presentation_id', async (req, res)=>{
+    //Får inn et token i header, som inneholder brukernavn i payloaden
+    let token = req.headers.authorization.split(' ')[1];
+
+    let valid = jwt.validateToken(token);
+    if(valid){
+        let result = await db.getSlides(req.params.presentation_id);
+        
+        if(result){
+            res.status(200).json(result).end();
+        } else {
+            res.status(500).end();
+        }
+
+    } else {
+        res.status(403).end();
+    }
+});
+
 /* PRIVATE PAGES */
 server.get('/random', authorizer, (req, res, next)=>{
     console.log('Welcome to random');
@@ -256,16 +289,18 @@ server.get('/random', authorizer, (req, res, next)=>{
 
 //post eller get?
 server.post('/api/login', authenticator, async (req, res) => {
+    
     if(req.login){
         //If login successful - generate token to send along
         let token = jwt.generateToken({username: req.user.username});
         res.status(200).json(token);
     } else {
-        res.status(403).end();
+        console.log('f');
+        res.status(403).send('Nope').end();
     }    
 });
 
-server.set('port', (process.env.PORT || 8080));
+server.set('port', (process.env.PORT || 1234));
 server.listen(server.get('port'), function() {
     console.log('server running', server.get('port'));
     
