@@ -39,11 +39,13 @@
     </div>
     <br>
     <button id="createSlide">Add slide</button>
+    <button id="getSlidesBTN">Get slides</button>
     <br>
     <hr>
     
 </body>
 <script>
+
     /* DEFINERER ALLE VARIABLENE */
 
     //Henter alle types-knappene
@@ -66,12 +68,16 @@
     //Lag en slide
     let createSlide = document.getElementById('createSlide');
 
+    //Hent slides
+    let getSlidesBTN = document.getElementById('getSlidesBTN');
+    getSlidesBTN.addEventListener('click', getSlides);
+
     //ID til en slide
     let slideID = 0;
 
     //Resten av properties til en slide
-    let slideType = 0;
-    let slideTheme = 0;
+    let slideType = 1; //Settes til 1 default
+    let slideTheme = 1; //Settes til 1 defaul
     let slideText = ''; //?
     let slideImage = '';
 
@@ -128,7 +134,12 @@
         let slides = await result.json();
 
         //Variabelen slides inneholder nå all informasjon om alle slidesene.
-        console.log(slides);
+        //console.log(slides[0].slides);
+        for(slide of slides[0].slides){
+            console.log(JSON.parse(slide));
+        }
+
+        return slides;
 
         /* TODO
         
@@ -148,6 +159,7 @@
             presentation_id: localStorage.getItem('pID'),
             slide_id: slide.id,
             type: slide.type,
+            theme: slide.theme,
             text: slide.text,
             image: slide.image
         }
@@ -167,6 +179,10 @@
         //Håndter eventuelle feil???
     }
 
+    window.onload = async function(){
+        let slides = await getSlides();
+        slideID = slides[0].slides.length;
+    }
 
 </script>
 </html>
