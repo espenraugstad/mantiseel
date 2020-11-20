@@ -33,10 +33,8 @@
         <div class="newPresent">
             <h2 class="createPresentation">Create New Presentation:</h2>
             <div class="inputform">
-                <form>
-                <input type="text" name="presenTitle">
-                <button id="newPresentation" type="submit">Create</button>
-              </form>
+                <input type="text" id="presentationTitle">
+                <button id="newPresentation">Create</button>
             </div>
         </div>
     
@@ -50,13 +48,6 @@
             <span class="bottom">My Presentations:</span>
         </h2>
         <div id="presentations" >
-            <!-- <h3>Presentation 1</h3>
-            <p>Private</p>
-            <h3>Presentation 2</h3>
-            <h3>Presentation 3</h3>
-            <h3>Presentation 4</h3>
-            <h3>Presentation 5</h3>
-            <h3>Presentation 6</h3> -->
            
         </div>
         
@@ -90,15 +81,13 @@
 
         let response = await fetch(url, config);
         let data = await response.json();
-        console.log(data); //
         data.reverse();
 
         //Eksempel:
         let flexElem = null;
         for(let i = 0; i < data.length; i++){
-            //console.log(data[i]);
             let presentation = data[i];
-            if(i%4 === 0){
+            if(i%3 === 0){
                 flexElem = document.createElement('div');
                 flexElem.classList.add('myPresentations');
                 presentations.appendChild(flexElem);
@@ -116,6 +105,13 @@
             <p>Public</p>`;
             }
             presentationDiv.innerHTML = html;
+
+            presentationDiv.addEventListener('click', ()=>{
+               
+                localStorage.setItem('pID', presentation.id);
+                location.href = 'create_basic.html';
+            })
+
             flexElem.appendChild(presentationDiv);
             
         }
@@ -183,12 +179,10 @@
             body: JSON.stringify(body),
             headers: headers
         }
-
-        let response = await fetch(url, config);
+        let response = await fetch(url, config);   
         let data = await response.json();
-        console.log(data);
-
-        myPresentations.innerHTML = '';
+    
+        presentations.innerHTML = '';
         getPresentations();
     });
 </script>

@@ -7,7 +7,7 @@ const server = express();
 const jwt = require('./modules/jwt'); 
 const { decodeToken } = require('./modules/jwt');
 
-server.use(bodyParser.json());
+server.use(bodyParser.json({limit: '50mb'}));
 server.use(express.static('public'));
 
 const credentials = require('./localenv').DATABASE_URL || process.env.DATABASE_URL;
@@ -120,8 +120,10 @@ server.post('/api/updatePresentation', async (req, res) => {
 
 server.post('/api/makeSlide', async (req, res) => {
     let presentation_id = req.body.presentation_id;
+    
     let slide = {
         id: req.body.slide_id,
+        theme: req.body.theme,
         type: req.body.type,
         text: req.body.text,
         image: req.body.image
@@ -249,6 +251,25 @@ server.get('/api/validUsername', async (req, res)=>{
     }
 });
 
+server.get('/api/getSlides/:presentation_id', async (req, res)=>{
+    //Får inn et token i header, som inneholder brukernavn i payloaden
+    let token = req.headers.authorization.split(' ')[1];
+
+    let valid = jwt.validateToken(token);
+    if(valid){
+        let result = await db.getSlides(req.params.presentation_id);
+        
+        if(result){
+            res.status(200).json(result).end();
+        } else {
+            res.status(500).end();
+        }
+
+    } else {
+        res.status(403).end();
+    }
+});
+
 /* PRIVATE PAGES */
 server.get('/random', authorizer, (req, res, next)=>{
     console.log('Welcome to random');
@@ -258,7 +279,7 @@ server.get('/random', authorizer, (req, res, next)=>{
 
 //post eller get?
 server.post('/api/login', authenticator, async (req, res) => {
-    console.log('e');
+    
     if(req.login){
         //If login successful - generate token to send along
         let token = jwt.generateToken({username: req.user.username});

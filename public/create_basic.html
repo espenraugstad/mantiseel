@@ -96,7 +96,7 @@
     })
 
     /* Lag en slide */
-    createSlide.addEventListener('click', ()=>{
+    createSlide.addEventListener('click', async ()=>{
         let slide = {
             id: ++slideID,
             type: slideType,
@@ -107,12 +107,65 @@
 
         slideImage = '';
 
-        //Send slide til serveren og legg til i databasen
-        /* 
-            createSlide(presentation_id, slide);
-        */
-
+        await addSlide(slide);
+        await getSlides();
     });
+
+    async function getSlides(){
+        const url = `/api/getSlides/${localStorage.getItem('pID')}`;
+
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer '+ sessionStorage.getItem('SID')
+        }
+
+        const config = {
+            method: 'get',
+            headers: headers
+        }
+
+        let result = await fetch(url, config);
+        let slides = await result.json();
+
+        //Variabelen slides inneholder nå all informasjon om alle slidesene.
+        console.log(slides);
+
+        /* TODO
+        
+        - Parse informasjon fra slides-variabelen.
+        - Legg til all info om en slide i en div med klasse "slide-div".
+        - Legg til eventlistener på slide-d iv'ene som gjør de klikkbare og gjør
+            det mulig å redigere de igjen.
+
+        */
+    }
+
+    async function addSlide(slide){
+        const url = '/api/makeSlide';
+        let token = sessionStorage.getItem('SID');
+
+        let body = {
+            presentation_id: localStorage.getItem('pID'),
+            slide_id: slide.id,
+            type: slide.type,
+            text: slide.text,
+            image: slide.image
+        }
+
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer '+token
+        }
+
+        const config = {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: headers
+        }
+
+        let result = await fetch(url, config);
+        //Håndter eventuelle feil???
+    }
 
 
 </script>

@@ -21,6 +21,26 @@ class Storage {
         }
     }
 
+    //Get all slides from a presentation
+    async getSlides(presentation_id){
+        const client = new pg.Client(this.credentials);
+        const query = {
+            text: 'SELECT slides FROM public.presentations WHERE id = $1;',
+            values: [presentation_id]
+        }
+        await this.tryConnection(client);
+
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result.rows;
+        } catch (err) {
+            console.log(`Cannont get slides: ${err}`);
+            client.end();
+        }
+
+    }
+
     //Get all presentations for a user
     async getPresentations(username){
 
@@ -68,19 +88,20 @@ class Storage {
 
         //Step 2: Add the slide to the presentation
         presentation.slides.push(slide);
+        
 
         //Step 3: Update the presentation in the database
         //update presentation updatePresentation(id, newTitle <String>, newShare <Number>, newSlides <Array>)
-        let result = await this.changeSlides(presentation.slides);
+        let result = await this.changeSlides(presentation.slides, id);
         return result;
     }
 
-    async changeSlides(newSlides) {
+    async changeSlides(newSlides, id) {
         const client = new pg.Client(this.credentials);
 
         const query = {
-            text: 'UPDATE public.presentations SET slides = $1 WHERE id = 2;',
-            values: [newSlides]
+            text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
+            values: [newSlides, id]
         }
 
         await this.tryConnection(client);
