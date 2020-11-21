@@ -1,0 +1,94 @@
+.smallBox {
+  border: 1px solid black;
+  width: 50px;
+  height: 50px;
+}
+
+#themes div {
+  width: 50px;
+  height: 50px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+#typeSelector,
+#themeSelector {
+  display: flex;
+  align-items: center;
+}
+
+#typeSelector h3,
+#themeSelector h3 {
+  margin-right: 20px;
+}
+
+#layouts,
+#themes {
+  display: flex;
+}
+#layouts div {
+  margin-right: 10px;
+  height: 85px;
+  width: 150px;
+  cursor: pointer;
+}
+
+#layouts div.active,
+#themes div.active {
+  border: 1px solid black;
+}
+#available-slides div.active {
+  background: gray;
+  color: white;
+}
+
+#content-tools h4 {
+  margin-bottom: 5px;
+}
+
+/* TOOL SPECIFIC */
+#BULLETPOINTS,
+#TEXT {
+  width: 100%;
+}
+
+#action-buttons {
+  background: gray;
+  padding: 10px;
+}
+#action-buttons button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+}
+#action-buttons button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+#my-slides-wrapper {
+  display: flex;
+}
+
+#available-slides {
+  padding-right: 20px;
+  border-right: 1px solid black;
+  margin-right: 20px;
+}
+
+#available-slides-button {
+  margin: 0 0 8px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+#available-slides-button:hover {
+  background: gray;
+  color: white;
+}
+
+#slide-preview {
+  width: 800px;
+  height: 448px;
+  border: 1px solid black;
+}

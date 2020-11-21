@@ -5,15 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Basic Presentation Creation</title>
     <script type="module" defer src="./js/components/creator.js"></script>
-    <style>
-      .smallBox {
-        border: 1px solid black;
-        width: 50px;
-        height: 50px;
-      }
-    </style>
+    <link rel="stylesheet" href="css/style_home.css" />
+    <link rel="stylesheet" href="css/presentation_themes.css" />
+    <link rel="stylesheet" href="css/creator.css" />
   </head>
   <body>
+    <div class="navbar">
+      <div class="logo">
+        <img src="img/logo_navbar2.jpg" class="logoImg" />
+      </div>
+      <nav>
+        <ul>
+          <li>Home</li>
+          <li>Sign Out</li>
+        </ul>
+      </nav>
+    </div>
+    <hr />
     <div id="mainBox">
       <div id="typeSelector">
         <h3>Layout:</h3>
@@ -26,11 +34,15 @@
       <div id="content-tools"></div>
     </div>
     <br />
-    <button id="save-slide">Save as new slide</button>
-    <button id="delete-slide">Delete slide</button>
-    <button id="getSlidesBTN">Get Slides</button>
+    <div id="action-buttons">
+      <button id="save-slide">Save as new slide</button>
+      <button id="delete-slide">Delete slide</button>
+      <button id="getSlidesBTN">Get Slides</button>
+    </div>
     <br />
-    <hr />
-    <div id="available-slides"></div>
+    <div id="my-slides-wrapper">
+      <div id="available-slides"></div>
+      <div id="slide-preview"></div>
+    </div>
   </body>
 </html>
