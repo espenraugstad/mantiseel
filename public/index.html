@@ -1,22 +1,16 @@
 <!DOCTYPE html>
-<html lang=en>
+<html lang="en">
 <head>
-    <meta charset=UTF-8>
-    <meta name=viewport content=width=device-width, initial-scale=1.0>
-    <title>ACE Presentr Presents</title>
-    <link rel="stylesheet" href="./css/styling.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACE Presenter</title>
+    <link rel="stylesheet" href="./css/style.css">
 </head>
+
 <body>
-    <div class="box-invisible">
-        <img src="img/logo.png" alt="logo">
-    <br>
-    <br>
-    <div class="buttons">
-        <input onclick="window.location.href='login.html'" class='login' type="submit" name="" value="Login">
-        <input onclick="window.location.href='create_user.html'" class='create_user' type="submit" name="" value="Create User">
-    </div>
-</div>
-
-
+    <main>
+        <h1>Welcome to ACE Presenter</h1>
+        <div class="button-group"><span id='login' onclick="location.href='login.html'">Login</span> <span id='create' onclick="location.href='create_user.html'">Create New User</span></div>
+    </main>
 </body>
 </html>

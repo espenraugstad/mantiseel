@@ -1,68 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style_home.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap" rel="stylesheet">
-
-    <title>ACE-Presentr</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Home</title>
 </head>
-
 <body>
-    <div class="navbar">
-        <div class="logo">
-            <img src="img/logo_navbar2.jpg" class="logoImg" />
+    <main>
+        <h1>Home</h1>
+        <p id="username">You are not logged in.</p>
+        <div id='create-box'>
+            <h3>Create New Presentation</h3>
+            <label for="presentationTitle">Presentation title:</label>
+            <input id="presentationTitle" type="text" />
+            <label for="shareValue">Private</label>
+            <input id="shareValue" type="checkbox" />
+            <br><br>
+            <button id="createPresentationBTN">Create Presentation</button>
         </div>
-        <nav>
-            <ul>
-                <li>Home</li>
-                <li>Sign Out</li>
-            </ul>
-        </nav>
-    </div>
-
-    <hr>
-    <br>
-    <div class="container">
-        <div class="avatar">
-            <img src="img/avatar2.png" alt="Avatar" class="avatarImg">
-            <p id="username">Username</p>
+        <div class="list-box">
+            <h3>My Presentations</h3>
+            <div id="presentations">
+                <p>You don't currently have any presentations.</p>
+            </div>
         </div>
-        <div class="newPresent">
-            <h2>Create New Presentation:</h2>
-            <input id="presentationTitle" type="text" class="presentInput" name="presentInput" value="Title">
-            <button id="newPresentation" type="button">Create</button>
-        </div>
-    </div>
-    <br><br>
-    <hr>
-    <div class="overview">
-        <h2>
-            <span class="top">Overview:</span>
-            <span class="bottom">My Presentations:</span>
-        </h2>
-        <div id="myPresentations" class="thumbnails">
-        </div>
-    </div>
+    </main>
+    
 </body>
-<script>
-    let presentationTitle = document.getElementById('presentationTitle');
-    let newPresentation = document.getElementById('newPresentation');
-    let username = document.getElementById('username');
-    let myPresentations = document.getElementById('myPresentations');
 
-    window.onload = function () {
-        getUsername();
+<script>
+    let username = document.getElementById('username');
+    let presentationTitle = document.getElementById('presentationTitle');
+    let createPresentationBTN = document.getElementById('createPresentationBTN');
+    let presentations = document.getElementById('presentations');
+    let shareValue = document.getElementById('shareValue');
+    let share = null;
+
+    getUsername();
+    getPresentations();
+
+    createPresentationBTN.addEventListener('click', async () => {
+        share = shareValue.checked ? 0:1;
+        const url = 'api/makePresentation';
+        const token = sessionStorage.getItem('SID');
+
+        const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
+
+        const body = {
+            title: presentationTitle.value,
+            share: share
+        }
+
+        const config = {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: headers
+        }
+        let response = await fetch(url, config);   
+        let data = await response.json();
+    
+        presentations.innerHTML = '';
         getPresentations();
-    }
+    });
 
     async function getPresentations() {
+        
         const url = 'api/getPresentations';
 
         const token = sessionStorage.getItem('SID');
-
+        
         const headers = {
             'content-type': 'application/json',
             'authorization': 'Bearer ' + token
@@ -72,35 +82,78 @@
             method: 'get',
             headers: headers
         }
-
+        
         let response = await fetch(url, config);
+        
         let data = await response.json();
-        console.log(data); //
-        data.reverse();
 
-        //Eksempel:
-        for (let presentation of data) {
-            let elem = document.createElement('div');
-            //elem.classList.add(); //Legg evt. til en klasse
-            
-            let html = `
-        <h3>${presentation.title}</h3>
-        `;
-            if (presentation.share === 0) {
-                html += `
-            <p>Private</p>`;
-            } else {
-                html += `
-            <p>Public</p>`;
-            }
-            elem.innerHTML = html;
-            myPresentations.appendChild(elem);
-            elem.addEventListener('click', ()=>{
-                localStorage.setItem('pID', presentation.id);
-                location.href = 'create_presentation.html';
-            });
+        data.reverse();
+       
+        if(data.length > 0){
+            presentations.innerHTML = '';
         }
 
+        for(let presentation of data){           
+            console.log(presentation.share);
+            //Create element for presentation
+            let elem = document.createElement('div');
+            elem.classList.add('presentation-card');
+            let html = `
+            <h4>${presentation.title}</h4>
+            `;
+
+            if(presentation.share === 0){
+                html+= `<div class="share">PRIVATE</div>`;
+            } else {
+                html+= `<div class="share">PUBLIC</div>`;
+            }
+
+            html+= `
+            <div class="delete-presentation-button">DELETE</div>
+            `;
+
+            elem.innerHTML = html;
+            presentations.appendChild(elem);
+
+            elem.children[1].addEventListener('click', ()=>{
+                sessionStorage.setItem('pid', presentation.id+"."+presentation.title);
+                location.href='slides.html';
+            });
+
+            elem.children[2].addEventListener('click', async ()=>{
+                let deletePresentationAnswer = confirm('Delete presentation?');
+                if(deletePresentationAnswer){
+                    await deletePresentation(presentation.id);
+                }
+                
+            })
+        }
+    }
+
+    async function deletePresentation(presentation_id){
+        const url = 'api/deletePresentation';
+
+        const token = sessionStorage.getItem('SID');
+        
+        const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
+
+        body = {
+            id: presentation_id
+        }
+
+        const config = {
+            method: 'post',
+            headers: headers,
+            body: JSON.stringify(body)
+        }
+        
+        let result = await fetch(url, config);
+        if(result.status === 200){
+            getPresentations();
+        }
     }
 
     async function getUsername() {
@@ -120,36 +173,7 @@
 
         let response = await fetch(url, config);
         let data = await response.json();
-        username.innerText = data.username;
+        username.innerHTML = `You are logged in as <span class="username">${data.username}<span>.`;
     }
-
-
-    newPresentation.addEventListener('click', async () => {
-        const url = 'api/makePresentation';
-        const token = sessionStorage.getItem('SID');
-
-        const headers = {
-            'content-type': 'application/json',
-            'authorization': 'Bearer ' + token
-        }
-
-        const body = {
-            title: presentationTitle.value
-        }
-
-        const config = {
-            method: 'post',
-            body: JSON.stringify(body),
-            headers: headers
-        }
-
-        let response = await fetch(url, config);
-        let data = await response.json();
-        console.log(data);
-
-        myPresentations.innerHTML = '';
-        getPresentations();
-    });
 </script>
-
 </html>

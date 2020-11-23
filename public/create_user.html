@@ -1,50 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>createUser</title>
-    <link rel="stylesheet" href="./css/styling.css">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+    <title>Create User</title>
 </head>
+
 <body>
-    <!-- <div id="container">
-        <h1>Create User</h1>
-        <form id="login-field-container">
-            <input id="username" type="text" class="login-field" placeholder="Username"/>
-            <input id="password" type="password" class="login-field" placeholder="Password"/>
-        </form>
-        <br>
-        <br>
-        <button class="button" id="createUser">Create User</button>
+    <main>
+        <h1>Create New User</h1>
+        <label for="username">Username: </label>
+        <input id="username" type="text" />
         <br><br>
+        <label for="password">Password: </label>
+        <input id="password" type="text" />
         <br>
-        <div id="message"></div>
-        
-        <p>Already a user?</p>
-        <button class="button" id="signIn">Sign In</button>
-    </div> -->
+        <br>
+        <button id="createUserBTN">Create User</button>
+    </main>
 
-    <div class="box-outer">
-        <form class="box" >
-            <h2>Create User</h2>
-            <br>
-            <input id='username' type="text" name="" placeholder="Username">
-            <input id='password' type="password" name="" placeholder="Password">
-            <br>
-            <input id='createUser' type="submit" name="" value="Create user">
-        </form>
-    </div>
-    
 </body>
-
 <script>
     let username = document.getElementById('username');
     let password = document.getElementById('password');
-    let createUser = document.getElementById('createUser');
-    
-    createUser.addEventListener('click', async (e)=>{
+    let createUserBTN = document.getElementById('createUserBTN');
+
+    createUserBTN.addEventListener('click', async (e) => {
         e.preventDefault();
-        console.log('click');
         const url = '/api/makeUser';
         const config = {
             method: 'post',
@@ -60,11 +44,12 @@
         let response = await fetch(url, config);
         let responseMessage = await response.json();
         console.log(responseMessage);
-        if(responseMessage.msg.includes('added')){
-            location.href='login.html';
+        if (responseMessage.msg.includes('added')) {
+            location.href = 'login.html';
         }
 
-        
+
     });
 </script>
+
 </html>

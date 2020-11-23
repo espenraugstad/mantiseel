@@ -4,22 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    
-    <link rel="stylesheet" href="./css/styling.css">
 </head>
 <body>
-    
-    <div class="box-outer">
-        <form class="box" method="post">
-            <h1>Login</h1>
-            <br>
-            <input id='username' type="text" name="" placeholder="Username">
-            <input id='password' type="password" name="" placeholder="Password">
-            <br>
-            <input id='login' type="submit" name="" value="Login">
-        </form>
-    </div>
+    <main>
+        <h1>Login</h1>
+        <label for="username">Username: </label>
+        <input id="username" type="text" />
+        <br><br>
+        <label for="password">Password: </label>
+        <input id="password" type="text" />
+        <br>
+        <br>
+        <button id="loginBTN">Login</button>
+    </main>
     
 </body>
-<script src="js/login.js"></script>
+<script src="./js/login.js"></script>
 </html>

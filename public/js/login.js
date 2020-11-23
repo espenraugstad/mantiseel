@@ -1,11 +1,10 @@
 let username = document.getElementById('username');
 let password = document.getElementById('password');
-let login = document.getElementById('login');
+let loginBTN = document.getElementById('loginBTN');
 
-login.addEventListener('click', async (e)=>{
+loginBTN.addEventListener('click', async (e)=>{
     e.preventDefault();
     if(username.value.length != 0 || password.value.length != 0){
-        console.log('Username and password OK');
         let authString = window.btoa(`${username.value}:${password.value}`);
         let auth = 'Basic '+authString;
         
@@ -13,17 +12,18 @@ login.addEventListener('click', async (e)=>{
             'content-type': 'application/json',
             'authorization': auth
         }
-
+        
         const url = '/api/login';
-
+       
         const config = {
             method: 'post',
             headers: headers
         }
-
-        let response = await fetch(url, config);
-        let token = await response.json();
         
+        let response = await fetch(url, config);
+       
+        let token = await response.json();
+
 
         if(response.status === 200){
             sessionStorage.clear();
