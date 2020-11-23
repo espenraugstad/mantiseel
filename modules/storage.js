@@ -21,6 +21,56 @@ class Storage {
         }
     }
 
+    //Delete presentation
+    async deletePresentation(id){
+        const client = new pg.Client(this.credentials);
+
+        //Just add the presentation with the username as a new entry in the database
+        const query = {
+            text: 'DELETE FROM public.presentations WHERE id = $1',
+            values: [id]
+        }
+
+        //Connect to database
+        try {
+
+            await client.connect();
+        } catch (err) {
+            console.log(`Delete presentation connection error: ${err}`);
+        }
+
+        //Query
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result;
+
+        } catch (err) {
+            console.log(`Delete presentation query error: ${err}`);
+            client.end();
+        }
+    }
+
+    //Get all slides from a presentation
+    async getSlides(presentation_id){
+        const client = new pg.Client(this.credentials);
+        const query = {
+            text: 'SELECT slides FROM public.presentations WHERE id = $1;',
+            values: [presentation_id]
+        }
+        await this.tryConnection(client);
+
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result.rows;
+        } catch (err) {
+            console.log(`Cannont get slides: ${err}`);
+            client.end();
+        }
+
+    }
+
     //Get all presentations for a user
     async getPresentations(username){
 
@@ -63,24 +113,27 @@ class Storage {
 
     //Add slide to a presentation with a given id
     async createSlide(id, slide) {
+       
         //Step 1: Get the presentation from the database 
         let presentation = await this.getPresentationFromID(id);
+        
 
         //Step 2: Add the slide to the presentation
         presentation.slides.push(slide);
+        
 
         //Step 3: Update the presentation in the database
         //update presentation updatePresentation(id, newTitle <String>, newShare <Number>, newSlides <Array>)
-        let result = await this.changeSlides(presentation.slides);
+        let result = await this.changeSlides(presentation.slides, id);
         return result;
     }
 
-    async changeSlides(newSlides) {
+    async changeSlides(newSlides, id) {
         const client = new pg.Client(this.credentials);
 
         const query = {
-            text: 'UPDATE public.presentations SET slides = $1 WHERE id = 2;',
-            values: [newSlides]
+            text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
+            values: [newSlides, id]
         }
 
         await this.tryConnection(client);
@@ -116,7 +169,46 @@ class Storage {
 
     }
 
-    
+    async deleteSlide(presentation_id, slide_id){
+        let presentation = await this.getPresentationFromID(presentation_id);
+        
+        let newSlides = presentation.slides.filter(slide => {
+            return JSON.parse(slide).id !== slide_id
+        });
+        
+        let result = await this.updatePresentationSlides(presentation_id, newSlides);
+        return result;
+    }
+
+    async updatePresentationSlides(presentation_id, newSlides){
+        const client = new pg.Client(this.credentials);
+
+        //Just add the presentation with the username as a new entry in the database
+        const query = {
+            text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
+            values: [newSlides, presentation_id]
+        }
+
+        //Connect to database
+        try {
+
+            await client.connect();
+        } catch (err) {
+            console.log(`Update presentation slide connection error: ${err}`);
+        }
+
+        //Query
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result;
+
+        } catch (err) {
+            console.log(`Update presentation slide query error: ${err}`);
+            client.end();
+        }
+    }
+
     //Add a new presentation based on username and presentation title. Returns presentation ID
     async addPresentation(username, presentation) {
         const client = new pg.Client(this.credentials);

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Presentation Creation</title>
+    <style>
+        .smallBox{
+            border: 1px solid black;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="mainBox">
+        <div id="typeSelector">
+            <h3>Type:</h3>
+            <div id="type1" class="smallBox">T1</div>
+            <div id="type2" class="smallBox">T2</div>
+            <div id="type3" class="smallBox">T3</div>
+            <p id="selectedType">Slide type 1</p>
+        </div>
+        <div id="themeSelector">
+            <h3>Theme:</h3>
+            <div id="theme1" class="smallBox">Theme 1</div>
+            <div id="theme2" class="smallBox">Theme 2</div>
+            <p id="selectedTheme">Theme 1</p>
+        </div>
+        <div id="textSelector">
+            <h3>Text:</h3>
+            <textarea name="inputText" id="inputText" cols="30" rows="10"></textarea>
+        </div>
+        <div id="image">
+            <h3>Image:</h3>
+            <input type="file" id="imageInput" accept="image/*">
+        </div>
+    </div>
+    <br>
+    <button id="createSlide">Add slide</button>
+    <button id="getSlidesBTN">Get slides</button>
+    <br>
+    <hr>
+    
+</body>
+<script>
+
+    /* DEFINERER ALLE VARIABLENE */
+
+    //Henter alle types-knappene
+    let type1 = document.getElementById('type1');
+    let type2 = document.getElementById('type2');
+    let type3 = document.getElementById('type3');
+    let selectedType = document.getElementById('selectedType');
+
+    //Henter alle themes knappene
+    let theme1 = document.getElementById('theme1');
+    let theme2 = document.getElementById('theme2');
+    let selectedTheme = document.getElementById('selectedTheme');
+
+    //Tekstfeltet
+    let inputText = document.getElementById('inputText');
+
+    //Bildet
+    let imageInput = document.getElementById('imageInput');
+
+    //Lag en slide
+    let createSlide = document.getElementById('createSlide');
+
+    //Hent slides
+    let getSlidesBTN = document.getElementById('getSlidesBTN');
+    getSlidesBTN.addEventListener('click', getSlides);
+
+    //ID til en slide
+    let slideID = 0;
+
+    //Resten av properties til en slide
+    let slideType = 1; //Settes til 1 default
+    let slideTheme = 1; //Settes til 1 defaul
+    let slideText = ''; //?
+    let slideImage = '';
+
+    /* Velg slide type */
+    type1.addEventListener('click', ()=>{ slideType = 1; selectedType.innerText = 'Type 1';});
+    type2.addEventListener('click', ()=>{ slideType = 2; selectedType.innerText = 'Type 2';});
+    type3.addEventListener('click', ()=>{ slideType = 3; selectedType.innerText = 'Type 3';});
+
+    /* Velg slide theme */
+    theme1.addEventListener('click', ()=>{ slideTheme = 1; selectedTheme.innerText = 'Theme 1';});
+    theme2.addEventListener('click', ()=>{ slideTheme = 2; selectedTheme.innerText = 'Theme 2';});
+
+    /* Last opp bilde */
+    imageInput.addEventListener('change', () => {
+        let file = imageInput.files[0];
+        
+        let freader = new FileReader();
+        freader.addEventListener('load', ()=>{
+            slideImage = freader.result;
+        });
+        freader.readAsDataURL(file);
+    })
+
+    /* Lag en slide */
+    createSlide.addEventListener('click', async ()=>{
+        let slide = {
+            id: ++slideID,
+            type: slideType,
+            theme: slideTheme,
+            text: inputText.value,
+            image: slideImage
+        }
+
+        slideImage = '';
+
+        await addSlide(slide);
+        await getSlides();
+    });
+
+    async function getSlides(){
+        const url = `/api/getSlides/${localStorage.getItem('pID')}`;
+
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer '+ sessionStorage.getItem('SID')
+        }
+
+        const config = {
+            method: 'get',
+            headers: headers
+        }
+
+        let result = await fetch(url, config);
+        let slides = await result.json();
+
+        //Variabelen slides inneholder nå all informasjon om alle slidesene.
+        //console.log(slides[0].slides);
+        for(slide of slides[0].slides){
+            console.log(JSON.parse(slide));
+        }
+
+        return slides;
+
+        /* TODO
+        
+        - Parse informasjon fra slides-variabelen.
+        - Legg til all info om en slide i en div med klasse "slide-div".
+        - Legg til eventlistener på slide-d iv'ene som gjør de klikkbare og gjør
+            det mulig å redigere de igjen.
+
+        */
+    }
+
+    async function addSlide(slide){
+        const url = '/api/makeSlide';
+        let token = sessionStorage.getItem('SID');
+
+        let body = {
+            presentation_id: localStorage.getItem('pID'),
+            slide_id: slide.id,
+            type: slide.type,
+            theme: slide.theme,
+            text: slide.text,
+            image: slide.image
+        }
+
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer '+token
+        }
+
+        const config = {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: headers
+        }
+
+        let result = await fetch(url, config);
+        //Håndter eventuelle feil???
+    }
+
+    window.onload = async function(){
+        let slides = await getSlides();
+        slideID = slides[0].slides.length;
+    }
+
+</script>
+</html>

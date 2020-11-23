@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style_home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;600&display=swap" rel="stylesheet">
+
+    <title>ACE-Presentr</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <img src="img/logo_navbar2.jpg" class="logoImg" />
+        </div>
+        <nav>
+            <ul>
+                <li>Home</li>
+                <li>Sign Out</li>
+            </ul>
+        </nav>
+    </div>
+
+    <hr>
+    <br>
+    <div class="container">
+        <div class="avatar">
+            <img src="img/avatar2.png" alt="Avatar" class="avatarImg">
+            <p id="username">Username</p>
+        </div>
+        <div class="newPresent">
+            <h2 class="createPresentation">Create New Presentation:</h2>
+            <div class="inputform">
+                <input type="text" id="presentationTitle">
+                <button id="newPresentation">Create</button>
+            </div>
+        </div>
+    
+    </div>
+
+    <br><br>
+    <hr>
+    <div class="overview">
+        <h2>
+            <span class="top">Overview:</span>
+            <span class="bottom">My Presentations:</span>
+        </h2>
+        <div id="presentations" >
+           
+        </div>
+        
+    </div>
+</body>
+<script>
+    let presentationTitle = document.getElementById('presentationTitle');
+    let newPresentation = document.getElementById('newPresentation');
+    let username = document.getElementById('username');
+    let presentations = document.getElementById('presentations');
+
+    window.onload = function () {
+        getUsername();
+        getPresentations();
+    }
+
+    async function getPresentations() {
+        const url = 'api/getPresentations';
+
+        const token = sessionStorage.getItem('SID');
+
+        const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
+
+        const config = {
+            method: 'get',
+            headers: headers
+        }
+
+        let response = await fetch(url, config);
+        let data = await response.json();
+        data.reverse();
+
+        //Eksempel:
+        let flexElem = null;
+        for(let i = 0; i < data.length; i++){
+            let presentation = data[i];
+            if(i%3 === 0){
+                flexElem = document.createElement('div');
+                flexElem.classList.add('myPresentations');
+                presentations.appendChild(flexElem);
+            }
+
+            let presentationDiv = document.createElement('div');
+            let html = `
+                    <h3>${presentation.title}</h3>
+                `;
+            if (presentation.share === 0) {
+                html += `
+            <p>Private</p>`;
+            } else {
+                html += `
+            <p>Public</p>`;
+            }
+            presentationDiv.innerHTML = html;
+
+            presentationDiv.addEventListener('click', ()=>{
+               
+                localStorage.setItem('pID', presentation.id);
+                location.href = 'create_basic.html';
+            })
+
+            flexElem.appendChild(presentationDiv);
+            
+        }
+
+      /*   for (let presentation of data) {
+            let elem = document.createElement('div');
+            //elem.classList.add(); //Legg evt. til en klasse
+            
+            let html = `
+        <h3>${presentation.title}</h3>
+        `;
+            if (presentation.share === 0) {
+                html += `
+            <p>Private</p>`;
+            } else {
+                html += `
+            <p>Public</p>`;
+            }
+            elem.innerHTML = html;
+            myPresentations.appendChild(elem);
+            elem.addEventListener('click', ()=>{
+                localStorage.setItem('pID', presentation.id);
+                location.href = 'create_presentation.html';
+            });
+        } */
+
+    }
+
+    async function getUsername() {
+        const url = 'api/validUsername';
+
+        const token = sessionStorage.getItem('SID');
+
+        const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
+
+        const config = {
+            method: 'get',
+            headers: headers
+        }
+
+        let response = await fetch(url, config);
+        let data = await response.json();
+        username.innerText = data.username;
+    }
+
+
+    newPresentation.addEventListener('click', async () => {
+        const url = 'api/makePresentation';
+        const token = sessionStorage.getItem('SID');
+
+        const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
+
+        const body = {
+            title: presentationTitle.value
+        }
+
+        const config = {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: headers
+        }
+        let response = await fetch(url, config);   
+        let data = await response.json();
+    
+        presentations.innerHTML = '';
+        getPresentations();
+    });
+</script>
+
+</html>

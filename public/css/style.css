@@ -1,0 +1,84 @@
+.button-group{
+    display: flex;
+    
+}
+
+#login, #create {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px;
+}
+
+.username{
+    font-weight: bolder;
+}
+
+#presentations, #currentSlides {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.presentation-card{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+    text-align: center;
+    width: 200px;
+    min-height: 250px;
+    margin: 10px 20px;
+}
+
+.share{
+    height: 70%;
+    padding: 35% 0;
+    color: lightgrey;
+    font-size: 30px;
+    align-content: center;
+    font-style: oblique;
+    cursor: pointer;
+}
+
+.delete-presentation-button{
+    background: lightgrey;
+    border-top: 1px solid black;
+    padding: 10px 0;
+    cursor: pointer;
+}
+
+#newSlideOptions{
+    display: flex;
+    flex-direction: column;
+}
+
+.optionGroup{
+    display: flex;
+}
+
+.slide-option{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    width: 150px;
+    height: 50px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.theme-name{
+    font-weight: normal;
+    color: lightgrey;
+    font-style: oblique;
+}
+
+.slide-header-preview{
+    font-weight: bolder;
+    background: lightpink;
+    padding: 15px 0;
+}
+
+.image-preview{
+    width:50px;
+}

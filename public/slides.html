@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Slides</title>
+</head>
+
+<body>
+    <main>
+        <h1>Slides</h1>
+        <p id="whichPresentation"></p>
+        <h2>Create a New Slide</h2>
+
+        <div id="newSlideOptions">
+            <h3>Select Slide Type</h3>
+            <div id="typeOptions" class="optionGroup">
+                <div class="slide-option" id="type1">Title
+                </div>
+                <div class="slide-option" id="type2">Text
+                    With Image</div>
+                <div class="slide-option" id="type3">List
+                </div>
+            </div>
+            <h3>Select Slide Theme</h3>
+            <div id="themeOptions" class="optionGroup">
+                <div class="slide-option" id="theme1">Light
+                </div>
+                <div class="slide-option" id="theme2">Dark
+                </div>
+            </div>
+        </div>
+
+        <h3>Enter information</h3>
+        <div id="slideInfo"></div>
+        <br>
+        <button id="addSlideBTN">Add Slide</button>
+
+        <div class="list-box">
+            <h2>Current slides</h2>
+            <div id="currentSlides">
+                <p>You don't currently have any slides.</p>
+            </div>
+        </div>
+
+
+    </main>
+</body>
+<script>
+    let rawSlides = [];
+    let slideID = 0;
+
+    window.onload = async function () {
+        rawSlides = await getSlides();
+        slideID = rawSlides.length;
+    }
+
+    let currentSlides = document.getElementById('currentSlides');
+
+    let whichPresentation = document.getElementById('whichPresentation');
+    whichPresentation.innerHTML = `You are currently editing <span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span>.`;
+
+    let addSlideBTN = document.getElementById('addSlideBTN');
+
+    let type1 = document.getElementById('type1');
+    let type2 = document.getElementById('type2');
+    let type3 = document.getElementById('type3');
+    let theme1 = document.getElementById('theme1');
+    let theme2 = document.getElementById('theme2');
+
+    let titleText = null;
+    let slideText = null;
+    let imageInput = null;
+    let textList = null;
+    let slideImage = null;
+
+    let slideInfo = document.getElementById('slideInfo');
+
+    //Default values
+    let selectedType = 1;
+    type1.style.background = 'lightgrey';
+    setSlideInfo();
+    let selectedTheme = 1;
+    theme1.style.background = 'lightgrey';
+
+
+
+    //Event listeners for selection
+    type1.addEventListener('click', () => {
+        type1.style.background = 'lightgrey';
+        type2.style.background = 'white';
+        type3.style.background = 'white';
+        selectedType = 1;
+        setSlideInfo();
+    });
+    type2.addEventListener('click', () => {
+        type1.style.background = 'white';
+        type2.style.background = 'lightgrey';
+        type3.style.background = 'white';
+        selectedType = 2;
+        setSlideInfo();
+    });
+    type3.addEventListener('click', () => {
+        type1.style.background = 'white';
+        type2.style.background = 'white';
+        type3.style.background = 'lightgrey';
+        selectedType = 3;
+        setSlideInfo();
+    });
+
+    theme1.addEventListener('click', () => {
+        theme1.style.background = 'lightgrey';
+        theme2.style.background = 'white';
+        selectedTheme = 1;
+    });
+    theme2.addEventListener('click', () => {
+        theme1.style.background = 'white';
+        theme2.style.background = 'lightgrey';
+        selectedTheme = 2;
+    });
+
+    function setSlideInfo() {
+        let html = '';
+        if (selectedType === 1) {
+            html = `
+            <label for="titleText">Title: </label>
+            <input id="titleText" type="text" />
+            `;
+            slideInfo.innerHTML = html;
+            titleText = document.getElementById('titleText');
+        } else if (selectedType === 2) {
+            html = `
+            <label for="slideText">Text: </label><br>
+            <textarea id="slideText" type="text" rows="5" cols="33"></textarea>
+            <br><br>
+            <input type="file" id="imageInput" accept="image/*">`;
+            slideInfo.innerHTML = html;
+            slideText = document.getElementById('slideText');
+            imageInput = document.getElementById('imageInput');
+            imageInput.addEventListener('change', () => {
+                let file = imageInput.files[0];
+
+                let freader = new FileReader();
+                freader.addEventListener('load', () => {
+                    slideImage = freader.result;
+                });
+                freader.readAsDataURL(file);
+            })
+        } else if (selectedType === 3) {
+            html = `<label for="textList">List (each new line is a new point):</label><br>
+            <textarea id="textList" type="text" row="5" cols="33"></textarea>`;
+            slideInfo.innerHTML = html;
+            textList = document.getElementById('textList');
+        }
+    }
+
+    addSlideBTN.addEventListener('click', async () => {
+        let slide = {
+            id: slideID,
+            type: selectedType,
+            theme: selectedTheme
+        }
+
+        if (selectedType === 1) {
+            slide.text = titleText.value
+        }
+        if (selectedType === 2) {
+            slide.text = slideText.value;
+            slide.image = slideImage;
+        }
+        if (selectedType === 3) {
+            slide.text = textList.value;
+        }
+        slideID++;
+        console.log(slide);
+
+        //Server
+        const url = '/api/makeSlide';
+        let token = sessionStorage.getItem('SID');
+
+        let body = {
+            presentation_id: sessionStorage.getItem('pid').split('.')[0],
+            slide: slide
+        }
+
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
+
+        const config = {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: headers
+        }
+        let result = await fetch(url, config);
+
+        rawSlides = await getSlides();
+    })
+
+    async function getSlides() {
+        const url = `/api/getSlides/${sessionStorage.getItem('pid').split('.')[0]}`;
+        let token = sessionStorage.getItem('SID');
+
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
+
+        const config = {
+            method: 'get',
+            headers: headers
+        }
+
+        let result = await fetch(url, config);
+        let data = await result.json();
+        let slides = data[0].slides;
+
+        if (slides.length > 0) {
+            currentSlides.innerHTML = '';
+        }
+        let slideCounter = 1;
+        for (let slide of slides) {
+            slide = JSON.parse(slide);
+
+            let elem = document.createElement('div');
+            elem.classList.add('presentation-card');
+            let html = `
+            <h4>Slide No ${slideCounter} <br><br><span class="theme-name">${slide.theme === 1 ? 'Light Theme' : 'Dark Theme'}</span></h4>
+            `;
+
+            if (slide.type === 1) {
+                html += `
+                    <div class="slide-header-preview">${slide.text}</div>
+                `;
+            } else if (slide.type === 2) {
+
+                html += `
+                <div class="slide-type2-preview">
+                <img src = ${slide.image} class="image-preview"> 
+                <br><br>
+                <div>${slide.text}</div>   
+                </div>
+                `;
+
+            } else if (slide.type === 3) {
+                let bulletpoints = slide.text.replace(/\n/g, '<br>');
+                html += `
+                    <div>${bulletpoints}</div>
+                `;
+            }
+
+            elem.innerHTML = html;
+            currentSlides.appendChild(elem);
+
+            elem.addEventListener('click', async () => {
+                let deleteSlideAnswer = confirm('Delete slide?');
+                //Returnerer true eller false.
+                if (deleteSlideAnswer) {
+                    console.log('Delete slide');
+                    await deleteSlide(slide.id, sessionStorage.getItem('pid').split('.')[0]);
+                }
+            });
+
+            slideCounter++;
+        }
+        //console.log(slides);
+
+        return slides;
+
+    }
+
+    async function deleteSlide(slide_id, presentation_id) {
+                const url = '/api/deleteSlide';
+
+                let token = sessionStorage.getItem('SID');
+
+                let headers = {
+                    'content-type': 'application/json',
+                    'authorization': 'Bearer ' + token
+                }
+
+                let body = {
+                    presentation_id: presentation_id,
+                    slide_id: slide_id
+                }
+
+                const config = {
+                    method: 'post',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                }
+
+                let result = await fetch(url, config);
+                let data = await result.json();
+                console.log(data);
+                rawSlides = await getSlides();
+            }
+
+</script>
+
+</html>
