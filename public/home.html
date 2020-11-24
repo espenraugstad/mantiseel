@@ -180,10 +180,9 @@
     }
 
     async function getUsername() {
-        const url = 'api/validUsername';
+        const url = '/api/validUsername';
 
         const token = sessionStorage.getItem('SID');
-
         const headers = {
             'content-type': 'application/json',
             'authorization': 'Bearer ' + token
@@ -196,6 +195,8 @@
 
         let response = await fetch(url, config);
         let data = await response.json();
+        console.log(data);
+
         username.innerHTML = `You are logged in as <span class="username">${data.username}<span>.`;
     }
 </script>

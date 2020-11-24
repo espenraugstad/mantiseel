@@ -29,7 +29,7 @@ const db = new storage(credentials);
 /* **************** MIDDLEWARE ************************** */
 const authenticator = async (req, res, next) => {
     //Basic http authentication for login
-    console.log('Authenticating....');
+    //console.log('Authenticating....');
 
     //If no authorization header:
     if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
@@ -38,22 +38,22 @@ const authenticator = async (req, res, next) => {
 
     const credentials = req.headers.authorization.split(' ')[1];
     const [username, password] = Buffer.from(credentials, 'base64').toString('UTF-8').split(":");
-
+    
     //Retrieve username and password from database
-    let user, passwordFromDB;
+    let passwordFromDB;
     if (username) {
-        user = await db.getUser(username);
-        if (user) {
-            passwordFromDB = user.password;
-        } else {
+        let data = await db.getUser(username);
+        if (!data) {
             console.log('User does not exist');
             return;
+        } else {
+            passwordFromDB = data.password;
         }
     }
 
     //If password OK - login = ok
     if (encrypt.comparePasswords(encrypt.encryptPassword(password), passwordFromDB)) {
-        req.user = user;
+        req.user = username;
         req.login = true;
         next();
     } else {
@@ -64,7 +64,7 @@ const authenticator = async (req, res, next) => {
 
 const authorizer = async (req, res, next) => {
     //If no authorization header:
-    console.log('Authorizing....');
+    //console.log('Authorizing....');
     if (!req.headers.authorization || req.headers.authorization.indexOf('Bearer ') === -1) {
         return res.append("WWW-Authenticate", 'Bearer realm="User Visible Realm", charset="UTF-8"').status(401).end();
     }
@@ -75,12 +75,12 @@ const authorizer = async (req, res, next) => {
 
     //If validation => next()
     if (valid) {
-        console.log('Authorized');
+        //console.log('Authorized');
         req.authorized = true;
         req.token = token;
         next();
     } else {
-        console.log('Unauthorized');
+        //console.log('Unauthorized');
         res.status(401).end();
     }
 }
@@ -91,7 +91,7 @@ server.post('/api/login', authenticator, async (req, res) => {
 
     if (req.login) {
         //If login successful - generate token to send along
-        let token = jwt.generateToken({ username: req.user.username });
+        let token = jwt.generateToken({ username: req.user });
         res.status(200).json(token);
     } else {
 
@@ -162,7 +162,9 @@ server.post('/api/updateUser', async (req, res) => {
 server.get('/api/deleteUser', async (req, res) => {
     if(req.authorized){
         let decodedPayload = decodeToken(req.token);
+        console.l;
         let username = decodedPayload.username;
+
         let result = await db.deleteUser(username)
         if(result){
             res.status(200).end();
@@ -175,8 +177,10 @@ server.get('/api/deleteUser', async (req, res) => {
 
 server.get('/api/validUsername', async (req, res) => {
     if(req.authorized){
+    
         let decodedPayload = decodeToken(req.token);
         let username = decodedPayload.username;
+        
         res.status(200).json({ username: username }).end();
     }
 });
@@ -250,9 +254,9 @@ server.get('/api/getPresentations', async (req, res) => {
         let username = decodedPayload.username;
 
         let result = await db.getPresentations(username);
+        console.log(result);
 
         if (result) {
-            //console.log(result);
             res.status(200).json(result).end();
         } else {
             res.status(500).end();

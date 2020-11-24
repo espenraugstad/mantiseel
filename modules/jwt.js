@@ -41,9 +41,10 @@ function validateToken(token){
 
 function decodeToken(token){
     //Get payload
-    let encodedPayload = token.split('.')[1];
+    
+    let encodedPayload = token.split('.')[1];    
     let payloadBUF = Buffer.from(encodedPayload, 'base64');
-    let payload = payloadBUF.toString('utf-8');
+    let payload = payloadBUF.toString('utf8');
     return JSON.parse(payload);
 }
 
