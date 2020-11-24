@@ -159,11 +159,18 @@ server.post('/api/updateUser', async (req, res) => {
     res.status(200).json(response).end();
 });
 
-server.post('/api/deleteUser', async (req, res) => {
-    //Kun innlogget bruker som kan slette seg selv.
-    //Vil da også slette alle presentasjoner!
+server.get('/api/deleteUser', async (req, res) => {
+    if(req.authorized){
+        let decodedPayload = decodeToken(req.token);
+        let username = decodedPayload.username;
+        let result = await db.deleteUser(username)
+        if(result){
+            res.status(200).end();
+        } else {
+            res.status(500).end();
+        }
 
-    //res.status(200).json(response).end();
+    }
 });
 
 server.get('/api/validUsername', async (req, res) => {
