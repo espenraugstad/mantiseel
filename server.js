@@ -1,3 +1,15 @@
+/* 
+
+Organizing requests:
+M - Make
+U - Update
+D - Delete
+S - Share (other)
+---
+G - Get
+
+*/
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -64,125 +76,30 @@ const authorizer = async (req, res, next) => {
     //If validation => next()
     if (valid) {
         console.log('Authorized');
+        req.authorized = true;
+        req.token = token;
         next();
     } else {
         console.log('Unauthorized');
         res.status(401).end();
     }
 }
-
 /* ****************************************** */
 
-server.post('/api/makePresentation', async (req, res) => {
+/* BASIC AUTHENTICATION FOR LOGIN */
+server.post('/api/login', authenticator, async (req, res) => {
 
-    //Får inn i body: et JSON-objekt som inneholder tittel på presentasjonen
-    let title = req.body.title;
-
-    let presentation = {
-        title: title,
-        share: req.body.share,
-        slides: []
-    }
-    console.log(presentation);
-
-    //Får også inn et token i header, som inneholder brukernavn i payloaden
-    let token = req.headers.authorization.split(' ')[1];
-
-    let valid = jwt.validateToken(token);
-    if (valid) {
-        let decodedPayload = decodeToken(token);
-        let username = decodedPayload.username;
-
-        let id = await db.addPresentation(username, presentation);
-
-        if (id) {
-            res.status(200).json({ id: id }).end();
-        } else {
-            res.status(500).end();
-        }
-
+    if (req.login) {
+        //If login successful - generate token to send along
+        let token = jwt.generateToken({ username: req.user.username });
+        res.status(200).json(token);
     } else {
-        res.status(403).end();
+
+        res.status(403).send('Nope').end();
     }
 });
 
-server.post('/api/deletePresentation', async (req, res) => {
-
-
-    //Får inn et token i header, som inneholder brukernavn i payloaden
-    let token = req.headers.authorization.split(' ')[1];
-
-    let valid = jwt.validateToken(token);
-    if (valid) {
-        let result = await db.deletePresentation(req.body.id);
-
-        if (result) {
-            res.status(200).end();
-        } else {
-            res.status(500).end();
-        }
-
-    } else {
-        res.status(403).end();
-    }
-});
-
-server.post('/api/updatePresentation', async (req, res) => {
-
-
-    res.status(200).json(response).end();
-});
-
-server.post('/api/makeSlide', async (req, res) => {
-    let presentation_id = req.body.presentation_id;
-
-    let slide = req.body.slide;
-
-    //Får inn et token i header, som inneholder brukernavn i payloaden
-    let token = req.headers.authorization.split(' ')[1];
-
-    let valid = jwt.validateToken(token);
-    if (valid) {
-        let result = await db.createSlide(presentation_id, slide);
-
-        if (result) {
-            res.status(200).end();
-        } else {
-            res.status(500).end();
-        }
-
-    } else {
-        res.status(403).end();
-    }
-
-});
-
-server.post('/api/deleteSlide', async (req, res) => {
-
-    //Får inn et token i header, som inneholder brukernavn i payloaden
-    let token = req.headers.authorization.split(' ')[1];
-
-    let valid = jwt.validateToken(token);
-    if (valid) {
-        let result = await db.deleteSlide(req.body.presentation_id, req.body.slide_id);
-
-        if (result) {
-            res.status(200).json('slide deleted').end();
-        } else {
-            res.status(500).end();
-        }
-
-    } else {
-        res.status(403).end();
-    }
-});
-
-server.post('/api/updateSlide', async (req, res) => {
-
-
-    res.status(200).json(response).end();
-});
-
+/* AVAILABLE WITHOUT FULL AUTHORIZATION OR AUTHENTICATION */
 server.post('/api/makeUser', async (req, res) => {
 
     let username = req.body.username;
@@ -195,8 +112,51 @@ server.post('/api/makeUser', async (req, res) => {
     let result = await db.addUser(username, password);
 
     res.status(200).json(result).end();
+});
 
-    //res.status(200).json(response).end();
+/* CONDITIONAL AUTHORIZATION */
+server.get('/api/getSlides/:presentation_id', async (req, res) => {
+
+    let shareState = await db.getShareState(req.params.presentation_id);
+
+    //1 is public, 0 is private
+    if (shareState === 1) {
+        console.log('public');
+        let result = await db.getSlides(req.params.presentation_id);
+
+        if (result) {
+            res.status(200).json(result).end();
+        } else {
+            res.status(500).end();
+        }
+    } else if (shareState === 0) {
+        //Require authorization
+        authorizer(req, res, async () => {
+            if (req.authorized) {
+                let result = await db.getSlides(req.params.presentation_id);
+
+                if (result) {
+                    res.status(200).json(result).end();
+                } else {
+                    res.status(500).end();
+                }
+
+            } else {
+                res.status(403).end();
+            }
+        });
+    }
+});
+
+/* REQUIRES AUTHORIZATION */
+server.use(authorizer);
+
+//Users
+
+server.post('/api/updateUser', async (req, res) => {
+
+
+    res.status(200).json(response).end();
 });
 
 server.post('/api/deleteUser', async (req, res) => {
@@ -206,10 +166,60 @@ server.post('/api/deleteUser', async (req, res) => {
     //res.status(200).json(response).end();
 });
 
-server.post('/api/updateUser', async (req, res) => {
+server.get('/api/validUsername', async (req, res) => {
+    if(req.authorized){
+        let decodedPayload = decodeToken(req.token);
+        let username = decodedPayload.username;
+        res.status(200).json({ username: username }).end();
+    }
+});
+
+//Presentations
+
+server.post('/api/makePresentation', testMid, async (req, res) => {
+
+    //Får inn i body: et JSON-objekt som inneholder tittel på presentasjonen
+    let title = req.body.title;
+
+    let presentation = {
+        title: title,
+        share: req.body.share,
+        slides: []
+    }
+
+    if (req.authorized) {
+        let decodedPayload = decodeToken(req.token);
+        let username = decodedPayload.username;
+
+        let id = await db.addPresentation(username, presentation);
+
+        if (id) {
+            res.status(200).json({ id: id }).end();
+        } else {
+            res.status(500).end();
+        }
+    }
+
+});
+
+server.post('/api/updatePresentation', async (req, res) => {
 
 
     res.status(200).json(response).end();
+});
+
+server.post('/api/deletePresentation', async (req, res) => {
+    //Får inn et token i header, som inneholder brukernavn i payloaden
+
+    if (req.authorized) {
+        let result = await db.deletePresentation(req.body.id);
+
+        if (result) {
+            res.status(200).end();
+        } else {
+            res.status(500).end();
+        }
+    }
 });
 
 server.post('/api/sharePresentation', async (req, res) => {
@@ -217,29 +227,32 @@ server.post('/api/sharePresentation', async (req, res) => {
     let id = req.body.id;
     let share = req.body.share;
 
-    //Får inn et token i header, som inneholder brukernavn i payloaden
-    let token = req.headers.authorization.split(' ')[1];
-
-    let valid = jwt.validateToken(token);
-    if (valid) {
+    if(req.authorized){
         let result = await db.sharePresentation(id, share);
         if (result) {
             res.status(200).end();
         } else {
             res.status(500).end();
         }
-
-    } else {
-        res.status(403).end();
     }
-
-    //res.status(200).json(response).end();
 });
 
 server.get('/api/getPresentations', async (req, res) => {
-    //Får inn et token i header, som inneholder brukernavn i payloaden
+    if (req.authorized) {
+        let decodedPayload = decodeToken(req.token);
+        let username = decodedPayload.username;
 
-    let token = req.headers.authorization.split(' ')[1];
+        let result = await db.getPresentations(username);
+
+        if (result) {
+            //console.log(result);
+            res.status(200).json(result).end();
+        } else {
+            res.status(500).end();
+        }
+    }
+
+    /* let token = req.headers.authorization.split(' ')[1];
 
     let valid = jwt.validateToken(token);
     if (valid) {
@@ -257,79 +270,46 @@ server.get('/api/getPresentations', async (req, res) => {
 
     } else {
         res.status(403).end();
-    }
+    } */
 });
 
-server.get('/api/validUsername', async (req, res) => {
-    let token = req.headers.authorization.split(' ')[1];
+//Slides
 
-    let valid = jwt.validateToken(token);
-    if (valid) {
-        let decodedPayload = decodeToken(token);
-        let username = decodedPayload.username;
-        res.status(200).json({ username: username }).end();
+server.post('/api/makeSlide', async (req, res) => {
+    let presentation_id = req.body.presentation_id;
+    let slide = req.body.slide;
 
-
-    } else {
-        res.status(403).end();
-    }
-});
-
-server.get('/api/getSlides/:presentation_id', async (req, res) => {
-
-    //Får inn et token i header, som inneholder brukernavn i payloaden
-    let token = req.headers.authorization.split(' ')[1];
-
-    //let shareState = parseInt(req.headers.sharestate);
-    let shareState = await db.getShareState(req.params.presentation_id);
-    console.log(shareState);
-
-    //1 er public, 0 er private
-    if (shareState === 1) {
-        console.log('public');
-        let result = await db.getSlides(req.params.presentation_id);
+    if (req.authorized) {
+        let result = await db.createSlide(presentation_id, slide);
 
         if (result) {
-            res.status(200).json(result).end();
+            res.status(200).end();
         } else {
             res.status(500).end();
         }
-    } else if (shareState === 0) {
-        console.log('private');
-        let valid = jwt.validateToken(token);
-        if (valid) {
-            let result = await db.getSlides(req.params.presentation_id);
+    }
+});
 
-            if (result) {
-                res.status(200).json(result).end();
-            } else {
-                res.status(500).end();
-            }
+server.post('/api/updateSlide', async (req, res) => {
 
+
+    res.status(200).json(response).end();
+});
+
+server.post('/api/deleteSlide', async (req, res) => {
+    if (req.authorized) {
+        let result = await db.deleteSlide(req.body.presentation_id, req.body.slide_id);
+
+        if (result) {
+            res.status(200).json('slide deleted').end();
         } else {
-            res.status(403).end();
+            res.status(500).end();
         }
     }
-
-
 });
 
 
-/* ALL ENDPOINTS THAT REQUIRE AUTHENTICATION */
-
-//post eller get?
-server.post('/api/login', authenticator, async (req, res) => {
-
-    if (req.login) {
-        //If login successful - generate token to send along
-        let token = jwt.generateToken({ username: req.user.username });
-        res.status(200).json(token);
-    } else {
-
-        res.status(403).send('Nope').end();
-    }
-});
-
+/* ************************************************ */
 server.set('port', (process.env.PORT || 8080));
 server.listen(server.get('port'), function () {
     console.log('server running', server.get('port'));
