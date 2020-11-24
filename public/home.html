@@ -10,6 +10,7 @@
     <main>
         <h1>Home</h1>
         <p id="username">You are not logged in.</p>
+        <button id="deleteUserBTN">Delete Account</button>
         <div id='create-box'>
             <h3>Create New Presentation</h3>
             <label for="presentationTitle">Presentation title:</label>
@@ -36,9 +37,31 @@
     let presentations = document.getElementById('presentations');
     let shareValue = document.getElementById('shareValue');
     let share = null;
+    let deleteUserBTN = document.getElementById('deleteUserBTN');
 
     getUsername();
     getPresentations();
+
+    deleteUserBTN.addEventListener('click', async ()=>{
+        let confirmDelete = confirm('Are you sure you want to delete your account?\n All your presentations will also be deleted!');
+        if(confirmDelete){
+            const url = '/api/deleteUser';
+
+            const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + sessionStorage.getItem('SID')
+            }
+
+            const config = {
+                method: 'get',
+                headers: headers
+            }
+
+            let response = await fetch(url, config);
+            console.log(response);
+
+        }
+    });
 
     createPresentationBTN.addEventListener('click', async () => {
         share = shareValue.checked ? 0:1;

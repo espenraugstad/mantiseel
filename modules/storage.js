@@ -21,8 +21,42 @@ class Storage {
         }
     }
 
+    //Delete user and all their presentations!
+    async deleteUser(username) {
+        const client = new pg.Client(this.credentials);
+
+        const query1 = {
+            text: 'DELETE FROM public.presentations WHERE username = $1;',
+            values: [username]
+        };
+
+        const query2 = {
+            text: 'DELETE FROM public.users WHERE username = $1',
+            values: [username]
+        }
+
+        //Connect to database
+        try {
+            await client.connect();
+        } catch (err) {
+            console.log(`Delete user connection error: ${err}`);
+        }
+
+        //Query
+        try {
+            let result1 = await client.query(query1);
+            let result2 = await client.query(query2);
+            client.end();
+            return [result1,result2];
+
+        } catch (err) {
+            console.log(`Delete user query error: ${err}`);
+            client.end();
+        }
+    }
+
     //Get share state from database
-    async getShareState(id){
+    async getShareState(id) {
         const client = new pg.Client(this.credentials);
 
         const query = {
@@ -50,7 +84,7 @@ class Storage {
     }
 
     //Delete presentation
-    async deletePresentation(id){
+    async deletePresentation(id) {
         const client = new pg.Client(this.credentials);
 
         //Just add the presentation with the username as a new entry in the database
@@ -80,7 +114,7 @@ class Storage {
     }
 
     //Get all slides from a presentation
-    async getSlides(presentation_id){
+    async getSlides(presentation_id) {
         const client = new pg.Client(this.credentials);
         const query = {
             text: 'SELECT slides FROM public.presentations WHERE id = $1;',
@@ -100,7 +134,7 @@ class Storage {
     }
 
     //Get all presentations for a user
-    async getPresentations(username){
+    async getPresentations(username) {
 
         const client = new pg.Client(this.credentials);
         const query = {
@@ -141,14 +175,14 @@ class Storage {
 
     //Add slide to a presentation with a given id
     async createSlide(id, slide) {
-       
+
         //Step 1: Get the presentation from the database 
         let presentation = await this.getPresentationFromID(id);
-        
+
 
         //Step 2: Add the slide to the presentation
         presentation.slides.push(slide);
-        
+
 
         //Step 3: Update the presentation in the database
         //update presentation updatePresentation(id, newTitle <String>, newShare <Number>, newSlides <Array>)
@@ -197,18 +231,18 @@ class Storage {
 
     }
 
-    async deleteSlide(presentation_id, slide_id){
+    async deleteSlide(presentation_id, slide_id) {
         let presentation = await this.getPresentationFromID(presentation_id);
-        
+
         let newSlides = presentation.slides.filter(slide => {
             return JSON.parse(slide).id !== slide_id
         });
-        
+
         let result = await this.updatePresentationSlides(presentation_id, newSlides);
         return result;
     }
 
-    async updatePresentationSlides(presentation_id, newSlides){
+    async updatePresentationSlides(presentation_id, newSlides) {
         const client = new pg.Client(this.credentials);
 
         //Just add the presentation with the username as a new entry in the database
