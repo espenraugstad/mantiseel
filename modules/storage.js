@@ -21,6 +21,34 @@ class Storage {
         }
     }
 
+    //Get share state from database
+    async getShareState(id){
+        const client = new pg.Client(this.credentials);
+
+        const query = {
+            text: 'SELECT share FROM public.presentations WHERE id = $1',
+            values: [id]
+        }
+
+        //Connect to database
+        try {
+            await client.connect();
+        } catch (err) {
+            console.log(`Delete presentation connection error: ${err}`);
+        }
+
+        //Query
+        try {
+            let result = await client.query(query);
+            client.end();
+            return result.rows[0].share;
+
+        } catch (err) {
+            console.log(`Delete presentation query error: ${err}`);
+            client.end();
+        }
+    }
+
     //Delete presentation
     async deletePresentation(id){
         const client = new pg.Client(this.credentials);

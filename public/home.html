@@ -116,7 +116,7 @@
             presentations.appendChild(elem);
 
             elem.children[1].addEventListener('click', ()=>{
-                sessionStorage.setItem('pid', presentation.id+"."+presentation.title);
+                sessionStorage.setItem('pid', presentation.id+"."+presentation.title+"."+presentation.share);
                 location.href='slides.html';
             });
 

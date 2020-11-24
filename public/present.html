@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/slides.css">
+    <title>Presenting</title>
+</head>
+
+<body>
+    <div id="slideDIV">Her kommer sliden</div>
+    <div id="nav-buttons">
+        <button id="prev">Previous slide</button><button id="next">Next slide</button>
+    </div>
+</body>
+<script>
+    let slides = [];
+    let slideDIV = document.getElementById('slideDIV');
+    let prev = document.getElementById('prev');
+    let next = document.getElementById('next');
+
+    let slideIndex = 0;
+
+    prev.addEventListener('click', ()=>{
+        if(slideIndex > 0){
+            slideIndex--;
+        }
+        showSlide(slideIndex);
+        console.log(slideIndex);
+    });
+
+    next.addEventListener('click', ()=>{
+        if(slideIndex < slides.length-1){
+            slideIndex++;
+        }
+        showSlide(slideIndex);
+        console.log(slideIndex);
+    })
+
+    let htmlType3 = `
+    <div class="slide-container">
+        <div class="bulletpoints">
+            <ul>
+                <li class="bullet">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius vitae explicabo labore, voluptatibus ratione sint sed! Voluptas earum labore excepturi illum a saepe molestiae? Nemo labore officia consectetur reprehenderit? Hic.</li>
+                <li class="bullet">Point 2</li>
+                <li class="bullet">Point 3</li>
+            </ul>
+        </div>
+            <span class="type3-box1"></span>
+            <span class="type3-box2"></span>
+            <span class="type3-box3"></span>
+    </div>
+    `;
+
+    window.onload = async function () {
+        slides = await getSlides();
+        //console.log(JSON.parse(slides[0]));
+
+        //showSlide(slideIndex);
+        showSlide(slideIndex);
+
+    }
+
+    function showSlide(slideIndex) {
+        let slide = JSON.parse(slides[slideIndex]);
+        console.log(slide);
+        if (slide.type === 1) {
+            slideDIV.innerHTML = `
+            <div class="slide-container">
+            <span class="type1-box type1-box-top"></span><br><br>
+            <div class="type1-textbox">${slide.text}</div>
+            <span class="type1-box type1-box-bottom"></span><br><br>
+            </div>
+            `;
+        } else if (slide.type === 2){
+            slideDIV.innerHTML = `
+            <div class="slide-container">
+            <img class="type2-img" src = "${slide.image}">
+            <div class="type2-textbox">${slide.text.replace(/\n/,'<hr>')}</div>
+            <span class="type2-box"></span>
+            </div>
+            `;
+        } else if (slide.type === 3){
+            
+            let html = `
+            <div class="slide-container">
+            <div class="bulletpoints">
+            <ul>`;
+
+            let bpoints = slide.text.split('\n');
+            console.log(bpoints);
+            for(let point of bpoints){
+                html += `
+                <li class="bullet">${point}</li>
+                `;
+            }
+            
+            html +=   `</ul>
+            </div>
+            <span class="type3-box1"></span>
+            <span class="type3-box2"></span>
+            <span class="type3-box3"></span>
+            </div>
+            `;
+
+            slideDIV.innerHTML = html;
+        }
+    }
+
+
+
+    async function getSlides() {
+        //let presentation_id = sessionStorage.getItem('pid').split('.')[0];
+        //Get pres id from url
+        let presentation_id = window.location.href.split('=')[1];
+      
+        let token = sessionStorage.getItem('SID');
+    
+        const url = `/api/getSlides/${presentation_id}`;
+
+        const headers = {
+            'authorization': 'Bearer ' + token,
+        }
+
+        const config = {
+            method: 'get',
+            headers: headers
+        }
+
+        let result = await fetch(url, config);
+        let data = await result.json();
+        return data[0].slides;
+    }
+
+</script>
+
+</html>

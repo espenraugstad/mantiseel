@@ -13,6 +13,7 @@
     <main>
         <h1>Slides</h1>
         <p id="whichPresentation"></p>
+        <button id="startPresentation">Start Presentation</button>
         <h2>Create a New Slide</h2>
 
         <div id="newSlideOptions">
@@ -54,8 +55,11 @@
     let slideID = 0;
 
     window.onload = async function () {
+        
         rawSlides = await getSlides();
+        
         slideID = rawSlides.length;
+        
     }
 
     let currentSlides = document.getElementById('currentSlides');
@@ -70,6 +74,12 @@
     let type3 = document.getElementById('type3');
     let theme1 = document.getElementById('theme1');
     let theme2 = document.getElementById('theme2');
+    let startPresentation = document.getElementById('startPresentation');
+
+    startPresentation.addEventListener('click', ()=>{
+        location.href = `present.html?id=${sessionStorage.getItem('pid').split('.')[0]}`;
+    });
+
 
     let titleText = null;
     let slideText = null;
@@ -202,20 +212,24 @@
     })
 
     async function getSlides() {
+        
         const url = `/api/getSlides/${sessionStorage.getItem('pid').split('.')[0]}`;
+        
         let token = sessionStorage.getItem('SID');
-
+        
         let headers = {
             'content-type': 'application/json',
-            'authorization': 'Bearer ' + token
+            'authorization': 'Bearer ' + token,
+            'sharestate': sessionStorage.getItem('pid').split('.')[2]
         }
-
+        
         const config = {
             method: 'get',
             headers: headers
         }
-
+        
         let result = await fetch(url, config);
+        
         let data = await result.json();
         let slides = data[0].slides;
 
