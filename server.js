@@ -176,7 +176,7 @@ server.get('/api/validUsername', async (req, res) => {
 
 //Presentations
 
-server.post('/api/makePresentation', testMid, async (req, res) => {
+server.post('/api/makePresentation', async (req, res) => {
 
     //Får inn i body: et JSON-objekt som inneholder tittel på presentasjonen
     let title = req.body.title;
