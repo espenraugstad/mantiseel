@@ -55,11 +55,9 @@
     let slideID = 0;
 
     window.onload = async function () {
-        
         rawSlides = await getSlides();
-        
+        currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
         slideID = rawSlides.length;
-        
     }
 
     let currentSlides = document.getElementById('currentSlides');
@@ -212,6 +210,8 @@
     })
 
     async function getSlides() {
+        currentSlides.innerHTML = '';
+
         
         const url = `/api/getSlides/${sessionStorage.getItem('pid').split('.')[0]}`;
         
@@ -233,9 +233,6 @@
         let data = await result.json();
         let slides = data[0].slides;
 
-        if (slides.length > 0) {
-            currentSlides.innerHTML = '';
-        }
         let slideCounter = 1;
         for (let slide of slides) {
             slide = JSON.parse(slide);
@@ -282,7 +279,9 @@
             slideCounter++;
         }
         //console.log(slides);
-
+        if(slides.length === 0){
+            currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
+        }
         return slides;
 
     }
@@ -311,7 +310,9 @@
                 let result = await fetch(url, config);
                 let data = await result.json();
                 console.log(data);
+                console.log('1');
                 rawSlides = await getSlides();
+                console.log('2');
             }
 
 </script>
