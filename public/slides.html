@@ -56,7 +56,10 @@
 
     window.onload = async function () {
         rawSlides = await getSlides();
-        currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
+        if(rawSlides.length === 0){
+            currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
+        }
+        
         slideID = rawSlides.length;
     }
 
@@ -78,7 +81,6 @@
         location.href = `present.html?id=${sessionStorage.getItem('pid').split('.')[0]}`;
     });
 
-
     let titleText = null;
     let slideText = null;
     let imageInput = null;
@@ -93,7 +95,6 @@
     setSlideInfo();
     let selectedTheme = 1;
     theme1.style.background = 'lightgrey';
-
 
 
     //Event listeners for selection
@@ -283,7 +284,6 @@
             currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
         }
         return slides;
-
     }
 
     async function deleteSlide(slide_id, presentation_id) {
@@ -309,10 +309,7 @@
 
                 let result = await fetch(url, config);
                 let data = await result.json();
-                console.log(data);
-                console.log('1');
                 rawSlides = await getSlides();
-                console.log('2');
             }
 
 </script>

@@ -162,7 +162,7 @@ server.post('/api/updateUser', async (req, res) => {
 server.get('/api/deleteUser', async (req, res) => {
     if(req.authorized){
         let decodedPayload = decodeToken(req.token);
-        console.l;
+        
         let username = decodedPayload.username;
 
         let result = await db.deleteUser(username)
@@ -254,7 +254,7 @@ server.get('/api/getPresentations', async (req, res) => {
         let username = decodedPayload.username;
 
         let result = await db.getPresentations(username);
-        console.log(result);
+        //console.log(result);
 
         if (result) {
             res.status(200).json(result).end();
