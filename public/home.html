@@ -4,30 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
-    <title>Home</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;1,100&display=swap" rel="stylesheet">    <title>Home</title>
 </head>
 <body>
-    <main>
-        <h1>Home</h1>
-        <p id="username">You are not logged in.</p>
-        <button id="deleteUserBTN">Delete Account</button>
-        <div id='create-box'>
-            <h3>Create New Presentation</h3>
+    <div class="navbar">
+        <div class="logo">
+            <img src="img/logo_navbar2.jpg" class="logoImg" />
+        </div>
+        <nav>
+            <ul>
+                <li>Home</li>
+                <li>Delete User</li>
+                <li>Sign Out</li>
+            </ul>
+        </nav>
+    </div>
+    <hr>
+
+    <h1 class="home">Home</h1>
+    <div class="box-1">
+        <div class="column-1">
+            <p class="header2">Current User:</p>
+            <p class="username">You are not logged in.</p>
+            <button id="deleteUserBTN">Change Password</button>
+        </div>
+        <div id='column-2'>
+            <p class="header2">Create New Presentation:</p>
             <label for="presentationTitle">Presentation title:</label>
             <input id="presentationTitle" type="text" />
+            &nbsp;
             <label for="shareValue">Private</label>
             <input id="shareValue" type="checkbox" />
             <br><br>
             <button id="createPresentationBTN">Create Presentation</button>
         </div>
-        <div class="list-box">
-            <h3>My Presentations</h3>
-            <div id="presentations">
-                <p>You don't currently have any presentations.</p>
-            </div>
+    </div>
+    <br><hr><br>
+    <div class="box-2">
+        <p class="header2">My Presentations:</p>
+        <div id="presentations">
+            <p class="paragraph">You don't currently have any presentations.</p>
         </div>
-    </main>
-    
+    </div>    
 </body>
 
 <script>
