@@ -241,26 +241,17 @@ class Storage {
 
     }
 
+    /* REFACTORED */
     async getPresentationFromID(id) {
-        const client = new pg.Client(this.credentials);
         const query = {
             text: 'SELECT * FROM public.presentations WHERE id = $1',
             values: [id]
         }
 
-        await this.tryConnection(client);
-
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result.rows[0];
-        } catch (err) {
-            console.log(`Get presentation error: ${err}`);
-            client.end();
-        }
-
-
+        let [result] = await this.runQueries([query],'getPresentationFromID');
+        return result.rows[0];
     }
+
 
     async deleteSlide(presentation_id, slide_id) {
         let presentation = await this.getPresentationFromID(presentation_id);
