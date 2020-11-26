@@ -165,23 +165,16 @@ class Storage {
 
     }
 
+    /* REFACTORED */
     //Get all presentations for a user
     async getPresentations(username) {
-        const client = new pg.Client(this.credentials);
         const query = {
             text: 'SELECT * FROM public.presentations WHERE username = $1 ORDER BY id;',
             values: [username]
         }
-        await this.tryConnection(client);
 
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result.rows;
-        } catch (err) {
-            console.log(`Cannont change share property of presentation: ${err}`);
-            client.end();
-        }
+        let [result] = await this.runQueries([query], 'getPresentations');
+        return result.rows;
     }
 
     /* REFACTORED */
