@@ -184,24 +184,16 @@ class Storage {
         }
     }
 
+    /* REFACTORED */
     //Share/unshare presentation
     async sharePresentation(id, share) {
-        const client = new pg.Client(this.credentials);
         const query = {
             text: 'UPDATE public.presentations SET share = $1 WHERE id = $2;',
             values: [share, id]
         }
-        await this.tryConnection(client);
 
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result;
-        } catch (err) {
-            console.log(`Cannont change share property of presentation: ${err}`);
-            client.end();
-        }
-
+        let [result] = await this.runQueries([query], 'sharePresentation');
+        return result;
     }
 
     //Add slide to a presentation with a given id
