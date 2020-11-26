@@ -11,16 +11,6 @@ class Storage {
         };
     }
 
-    async tryConnection(client) {
-        try {
-            await client.connect();
-        } catch (err) {
-            console.log(`Connection error: ${err}`);
-            client.end();
-            return err;
-        }
-    }
-
     async runQueries(queries, caller){
         //queries: array of queries
         //caller: name of the function in which this function is called
@@ -53,115 +43,60 @@ class Storage {
         return results;
     }
 
+    /* REFACTORED */
     //Delete user and all their presentations!
     async deleteUser(username) {
-        const client = new pg.Client(this.credentials);
 
-        const query1 = {
-            text: 'DELETE FROM public.presentations WHERE username = $1;',
-            values: [username]
-        };
+        const queries = [
+            {
+                text: 'DELETE FROM public.presentations WHERE username = $1;',
+                values: [username]
+            },
+            {
+                text: 'DELETE FROM public.users WHERE username = $1',
+                values: [username]
+            }
+        ]
 
-        const query2 = {
-            text: 'DELETE FROM public.users WHERE username = $1',
-            values: [username]
-        }
-
-        //Connect to database
-        try {
-            await client.connect();
-        } catch (err) {
-            console.log(`Delete user connection error: ${err}`);
-        }
-
-        //Query
-        try {
-            let result1 = await client.query(query1);
-            let result2 = await client.query(query2);
-            client.end();
-            return [result1,result2];
-
-        } catch (err) {
-            console.log(`Delete user query error: ${err}`);
-            client.end();
-        }
+        let result = await this.runQueries(queries, 'deleteUser');
+        return result;
     }
 
+    /* REFACTORED */
     //Get share state from database
     async getShareState(id) {
-        const client = new pg.Client(this.credentials);
-
         const query = {
             text: 'SELECT share FROM public.presentations WHERE id = $1',
             values: [id]
         }
 
-        //Connect to database
-        try {
-            await client.connect();
-        } catch (err) {
-            console.log(`Delete presentation connection error: ${err}`);
-        }
-
-        //Query
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result.rows[0].share;
-
-        } catch (err) {
-            console.log(`Delete presentation query error: ${err}`);
-            client.end();
-        }
+        let [result] = await this.runQueries([query], 'getShareState');
+        return result.rows[0].share;
     }
 
+    /* REFACTORED */
     //Delete presentation
     async deletePresentation(id) {
-        const client = new pg.Client(this.credentials);
-
-        //Just add the presentation with the username as a new entry in the database
         const query = {
             text: 'DELETE FROM public.presentations WHERE id = $1',
             values: [id]
         }
 
-        //Connect to database
-        try {
-
-            await client.connect();
-        } catch (err) {
-            console.log(`Delete presentation connection error: ${err}`);
-        }
-
-        //Query
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result;
-
-        } catch (err) {
-            console.log(`Delete presentation query error: ${err}`);
-            client.end();
-        }
+        let [result] = await this.runQueries([query], 'deletePresentation');
+        return result;
     }
 
+    /* REFACTORED */
     //Get all slides from a presentation
     async getSlides(presentation_id) {
-        const client = new pg.Client(this.credentials);
+
         const query = {
             text: 'SELECT slides FROM public.presentations WHERE id = $1;',
             values: [presentation_id]
         }
-        await this.tryConnection(client);
 
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result.rows;
-        } catch (err) {
-            console.log(`Cannont get slides: ${err}`);
-            client.end();
-        }
+        let [result] = await this.runQueries([query], 'getSlides');
+        return result.rows;
 
     }
 
