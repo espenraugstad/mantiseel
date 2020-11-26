@@ -221,24 +221,15 @@ class Storage {
         return result;
     }
 
+    /* REFACTORED */
     async changeSlides(newSlides, id) {
-        const client = new pg.Client(this.credentials);
-
         const query = {
             text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
             values: [newSlides, id]
         }
 
-        await this.tryConnection(client);
-
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result;
-        } catch (err) {
-            console.log(`Update presentation failed: ${err}`);
-        }
-
+        let [result] = await this.runQueries([query], 'changeSlides');
+        return result;
     }
 
     /* REFACTORED */
