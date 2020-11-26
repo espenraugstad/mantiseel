@@ -273,33 +273,15 @@ class Storage {
         return result;
     }
 
+    /* REFACTORED */
     async updatePresentationSlides(presentation_id, newSlides) {
-        const client = new pg.Client(this.credentials);
-
-        //Just add the presentation with the username as a new entry in the database
         const query = {
             text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
             values: [newSlides, presentation_id]
         }
 
-        //Connect to database
-        try {
-
-            await client.connect();
-        } catch (err) {
-            console.log(`Update presentation slide connection error: ${err}`);
-        }
-
-        //Query
-        try {
-            let result = await client.query(query);
-            client.end();
-            return result;
-
-        } catch (err) {
-            console.log(`Update presentation slide query error: ${err}`);
-            client.end();
-        }
+        let [result] = await this.runQueries([query],'updatePresentationSlides');
+        return result;
     }
 
     /* REFACTORED */
