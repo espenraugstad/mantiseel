@@ -43,6 +43,25 @@ class Storage {
         return results;
     }
 
+    async editTitle(newTitle, id){
+        const query = {
+            text: 'UPDATE public.presentations SET title = $1 WHERE id = $2;',
+            values: [newTitle, id]
+        }
+
+        let [result] = await this.runQueries([query], 'editTile');
+        return result;
+    }
+
+    async updatePassword(newPassword, username){
+        const query = {
+            text: 'UPDATE public.users SET password = $1 WHERE username = $2;',
+            values: [newPassword, username]
+        }
+        let [result] = await this.runQueries([query], 'updatePassword');
+        return result;
+    }
+
     /* REFACTORED */
     //Delete user and all their presentations!
     async deleteUser(username) {

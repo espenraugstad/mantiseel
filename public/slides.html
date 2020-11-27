@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
     <title>Slides</title>
 </head>
@@ -13,7 +12,8 @@
     <main>
         <h1>Slides</h1>
         <p id="whichPresentation"></p>
-        <button id="startPresentation">Start Presentation</button>
+        <span id="editTitle" class='button-basic button-small'>Edit Presentation Title</span>
+        <span id="startPresentation" class='button-basic button-small'>Start Presentation</span>
         <h2>Create a New Slide</h2>
 
         <div id="newSlideOptions">
@@ -51,22 +51,86 @@
     </main>
 </body>
 <script>
+
+    let editTitle = document.getElementById('editTitle');
+    let whichPresentation = document.getElementById('whichPresentation');
+
+    editTitle.addEventListener('click', async () => {
+        let newTitle = prompt('Enter new title');
+        let token = sessionStorage.getItem('SID');
+
+        const url = '/api/editTitle';
+        const config = {
+            method: 'post',
+            body: JSON.stringify({
+                newTitle: newTitle,
+                id: sessionStorage.getItem('pid').split('.')[0]
+            }),
+            headers: {
+                'content-type': 'application/json',
+                'authorization': 'Bearer ' + token
+            }
+        }
+
+        let result = await fetch(url, config);
+        let message = await result.message;
+
+        //Oppdatere pid i session storage
+        let [id, title, share] = sessionStorage.getItem('pid').split('.');
+
+        let newPid = id + "." + newTitle + "." + share;
+        sessionStorage.setItem('pid', newPid);
+
+        whichPresentation.innerHTML = `You are currently editing <br><br><br><span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span><br><br>`;
+    });
+
     let rawSlides = [];
     let slideID = 0;
 
     window.onload = async function () {
         rawSlides = await getSlides();
-        if(rawSlides.length === 0){
+        if (rawSlides.length === 0) {
             currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
+        } else {
+            let editSlideBTNNodes = document.querySelectorAll('.editSlideBTN');
+            editSlideBTNNodes.forEach(node => {
+                node.addEventListener('click', async () => {
+                    console.log('Går til edit_slide.html');
+                });
+
+                let deleteSlideBTNNodes = document.querySelectorAll('.deleteSlideBTN');
+                deleteSlideBTNNodes.forEach(node => {
+                    node.addEventListener('click', async () => {
+                        console.log('click');
+                        let deleteSlideAnswer = confirm('Delete slide?');
+                        //Returnerer true eller false.
+                        if (deleteSlideAnswer) {
+                            console.log('Delete slide');
+                            await deleteSlide(slide.id, sessionStorage.getItem('pid').split('.')[0]);
+                        }
+                    });
+                });
+            })
+
+
+
+
+
+
+
+
         }
-        
+
         slideID = rawSlides.length;
     }
 
+
+
+
     let currentSlides = document.getElementById('currentSlides');
 
-    let whichPresentation = document.getElementById('whichPresentation');
-    whichPresentation.innerHTML = `You are currently editing <span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span>.`;
+
+    whichPresentation.innerHTML = `You are currently editing <br><br><br><span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span><br><br>`;
 
     let addSlideBTN = document.getElementById('addSlideBTN');
 
@@ -77,7 +141,7 @@
     let theme2 = document.getElementById('theme2');
     let startPresentation = document.getElementById('startPresentation');
 
-    startPresentation.addEventListener('click', ()=>{
+    startPresentation.addEventListener('click', () => {
         location.href = `present.html?id=${sessionStorage.getItem('pid').split('.')[0]}`;
     });
 
@@ -213,24 +277,24 @@
     async function getSlides() {
         currentSlides.innerHTML = '';
 
-        
+
         const url = `/api/getSlides/${sessionStorage.getItem('pid').split('.')[0]}`;
-        
+
         let token = sessionStorage.getItem('SID');
-        
+
         let headers = {
             'content-type': 'application/json',
             'authorization': 'Bearer ' + token,
             'sharestate': sessionStorage.getItem('pid').split('.')[2]
         }
-        
+
         const config = {
             method: 'get',
             headers: headers
         }
-        
+
         let result = await fetch(url, config);
-        
+
         let data = await result.json();
         let slides = data[0].slides;
 
@@ -241,12 +305,13 @@
             let elem = document.createElement('div');
             elem.classList.add('presentation-slide');
             let html = `
-            <h4>Slide No ${slideCounter} <br><br><span class="theme-name">${slide.theme === 1 ? 'Light Theme' : 'Dark Theme'}</span></h4>
+            <p>Slide No ${slideCounter}</p>
+            <span class="theme-name">${slide.theme === 1 ? 'Light Theme' : 'Dark Theme'}</span>
             `;
 
             if (slide.type === 1) {
                 html += `
-                    <div class="slide-header-preview">${slide.text}</div>
+                    <div class="slide-body-preview">${slide.text}</div>
                 `;
             } else if (slide.type === 2) {
 
@@ -259,58 +324,56 @@
                 `;
 
             } else if (slide.type === 3) {
-                let bulletpoints = slide.text.replace(/\n/g, '<br>');
-                html += `
-                    <div>${bulletpoints}</div>
-                `;
+                html += '<div class="slide-body-preview">'
+                let bulletArray = slide.text.split('\n');
+                let bulletLength = bulletArray.length > 3 ? 3 : bulletArray.length;
+
+                for (let i = 0; i < bulletLength; i++) {
+                    html += bulletArray[i] + '<br>';
+                }
+                html += '</div>';
             }
 
+            html += `<div class="slide-bottom">
+                <span class="editSlideBTN">EDIT</span>
+                <span class="deleteSlideBTN">DELETE</span>
+                </div>`;
             elem.innerHTML = html;
             currentSlides.appendChild(elem);
-
-            elem.addEventListener('click', async () => {
-                let deleteSlideAnswer = confirm('Delete slide?');
-                //Returnerer true eller false.
-                if (deleteSlideAnswer) {
-                    console.log('Delete slide');
-                    await deleteSlide(slide.id, sessionStorage.getItem('pid').split('.')[0]);
-                }
-            });
-
             slideCounter++;
         }
         //console.log(slides);
-        if(slides.length === 0){
+        if (slides.length === 0) {
             currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
         }
         return slides;
     }
 
     async function deleteSlide(slide_id, presentation_id) {
-                const url = '/api/deleteSlide';
+        const url = '/api/deleteSlide';
 
-                let token = sessionStorage.getItem('SID');
+        let token = sessionStorage.getItem('SID');
 
-                let headers = {
-                    'content-type': 'application/json',
-                    'authorization': 'Bearer ' + token
-                }
+        let headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + token
+        }
 
-                let body = {
-                    presentation_id: presentation_id,
-                    slide_id: slide_id
-                }
+        let body = {
+            presentation_id: presentation_id,
+            slide_id: slide_id
+        }
 
-                const config = {
-                    method: 'post',
-                    headers: headers,
-                    body: JSON.stringify(body)
-                }
+        const config = {
+            method: 'post',
+            headers: headers,
+            body: JSON.stringify(body)
+        }
 
-                let result = await fetch(url, config);
-                let data = await result.json();
-                rawSlides = await getSlides();
-            }
+        let result = await fetch(url, config);
+        let data = await result.json();
+        rawSlides = await getSlides();
+    }
 
 </script>
 

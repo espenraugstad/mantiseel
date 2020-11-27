@@ -14,7 +14,7 @@
         <nav>
             <ul>
                 <li>Dashboard</li>
-                <li>Delete User</li>
+                <li id="deleteUserBTN">Delete User</li>
                 <li>Sign Out</li>
             </ul>
         </nav>
@@ -26,7 +26,8 @@
         <div class="column-1">
             <p class="header2">Current User:</p>
             <p class="username" id="username">Currently not logged in.</p>
-            <button id="deleteUserBTN">Change Password</button>
+            
+            <span id="changePasswordBTN" class="button-basic button-small">Change Password</span>
         </div>
         <div id='column-2'>
             <p class="header2">Create New Presentation:</p>
@@ -36,7 +37,8 @@
             <label for="shareValue">Private</label>
             <input id="shareValue" type="checkbox" />
             <br><br>
-            <button id="createPresentationBTN">Create Presentation</button>
+            <span id="createPresentationBTN" class = "button-basic button-small">Create Presentation</span>
+            
         </div>
     </div>
     <br><hr><br>
@@ -56,9 +58,27 @@
     let shareValue = document.getElementById('shareValue');
     let share = null;
     let deleteUserBTN = document.getElementById('deleteUserBTN');
+    let changePasswordBTN = document.getElementById('changePasswordBTN');
 
     getUsername();
     getPresentations();
+
+    changePasswordBTN.addEventListener('click', async ()=>{
+        let newPassword = prompt('Enter new password');
+        const url = '/api/changePassword';
+        let config = {
+            method: 'post',
+            headers: {
+                'content-type': 'application/json',
+                'authorization': 'Bearer ' + sessionStorage.getItem('SID') + ' '+ newPassword
+            }   
+        }
+
+        let result = await fetch(url, config);
+        let message = await result.json();
+        console.log(message);
+
+    });
 
     deleteUserBTN.addEventListener('click', async ()=>{
         let confirmDelete = confirm('Are you sure you want to delete your account?\n All your presentations will also be deleted!');
@@ -215,7 +235,7 @@
         let data = await response.json();
         console.log(data);
 
-        username.innerHTML = `You are logged in as <span class="username">${data.username}<span>.`;
+        username.innerHTML = `<span class="username">${data.username}<span>`;
     }
 </script>
 </html>

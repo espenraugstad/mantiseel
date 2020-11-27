@@ -125,23 +125,19 @@ ul li:hover {
 }
 
 .login, .create {
-    border: 1px solid #6b6b6b;;
-    border-radius: 5px;
-    font-size: 1em;
-    padding-left: 15px;
-    padding-right: 15px;
     margin: 5px;
 }
 
 .button-basic {
-
     border: 1px solid #6b6b6b;;
     border-radius: 5px;
     font-size: 1em;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 5px 15px;
     margin: 5px;
+}
 
+.button-small {
+    font-size: 0.8em;
 }
 
 .username {
@@ -164,19 +160,25 @@ ul li:hover {
     flex-direction: column;
     border: 1px solid black;
     text-align: center;
-    width: 200px;
-    height: 150px;
+    width: 250px;
+    height: 187.5px;
     margin-right: 40px;
+    margin-bottom: 40px;
 }
 
 .presentation-slide{
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
     border: 1px solid black;
     text-align: center;
     width: 200px;
-    min-height: 250px;
+    min-width: 200px;
     margin-right: 40px;
+}
+
+.slide-bottom{
+
 }
 
 .share{
@@ -221,10 +223,15 @@ ul li:hover {
     font-style: oblique;
 }
 
-.slide-header-preview{
+.slide-body-preview{
     font-weight: bolder;
     background: lightpink;
+    height: 20%;
     padding: 15px 0;
+}
+
+.slide-bottom-preview{
+
 }
 
 .image-preview{

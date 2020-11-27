@@ -75,12 +75,12 @@ const authorizer = async (req, res, next) => {
 
     //If validation => next()
     if (valid) {
-        //console.log('Authorized');
+        console.log('Authorized');
         req.authorized = true;
         req.token = token;
         next();
     } else {
-        //console.log('Unauthorized');
+        console.log('Unauthorized');
         res.status(401).end();
     }
 }
@@ -152,6 +152,20 @@ server.get('/api/getSlides/:presentation_id', async (req, res) => {
 server.use(authorizer);
 
 //Users
+server.post('/api/changePassword', async (req, res)=>{
+    if(req.authorized){
+        let newPassword = encrypt.encryptPassword(req.headers.authorization.split(' ')[2]);
+        let username = decodeToken(req.token).username;
+        
+        let result = db.updatePassword(newPassword, username);
+        if(result){
+            res.status(200).json('Success').end();
+        } else {
+            res.status(500).json('Failed').end();
+        }
+    }
+});
+
 
 server.post('/api/updateUser', async (req, res) => {
 
@@ -212,6 +226,20 @@ server.post('/api/makePresentation', async (req, res) => {
     }
 
 });
+
+server.post('/api/editTitle', async (req, res)=>{
+    if(req.authorized){
+        let id = req.body.id;
+        let newTitle = req.body.newTitle;
+
+        let result = await db.editTitle(newTitle, id);
+        if(result){
+            res.status(200).json('Success').end();
+        } else {
+            res.status(500).json('Failed').end();
+        }
+    }
+})
 
 server.post('/api/updatePresentation', async (req, res) => {
 
