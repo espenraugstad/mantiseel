@@ -91,41 +91,10 @@
         rawSlides = await getSlides();
         if (rawSlides.length === 0) {
             currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
-        } else {
-            let editSlideBTNNodes = document.querySelectorAll('.editSlideBTN');
-            editSlideBTNNodes.forEach(node => {
-                node.addEventListener('click', async () => {
-                    console.log('Går til edit_slide.html');
-                });
-
-                let deleteSlideBTNNodes = document.querySelectorAll('.deleteSlideBTN');
-                deleteSlideBTNNodes.forEach(node => {
-                    node.addEventListener('click', async () => {
-                        console.log('click');
-                        let deleteSlideAnswer = confirm('Delete slide?');
-                        //Returnerer true eller false.
-                        if (deleteSlideAnswer) {
-                            console.log('Delete slide');
-                            await deleteSlide(slide.id, sessionStorage.getItem('pid').split('.')[0]);
-                        }
-                    });
-                });
-            })
-
-
-
-
-
-
-
-
-        }
+        } 
 
         slideID = rawSlides.length;
     }
-
-
-
 
     let currentSlides = document.getElementById('currentSlides');
 
@@ -157,9 +126,8 @@
     let selectedType = 1;
     type1.style.background = 'lightgrey';
     setSlideInfo();
-    let selectedTheme = 1;
+    let selectedTheme = 1;  
     theme1.style.background = 'lightgrey';
-
 
     //Event listeners for selection
     type1.addEventListener('click', () => {
@@ -168,6 +136,7 @@
         type3.style.background = 'white';
         selectedType = 1;
         setSlideInfo();
+       
     });
     type2.addEventListener('click', () => {
         type1.style.background = 'white';
@@ -175,6 +144,7 @@
         type3.style.background = 'white';
         selectedType = 2;
         setSlideInfo();
+        
     });
     type3.addEventListener('click', () => {
         type1.style.background = 'white';
@@ -182,6 +152,7 @@
         type3.style.background = 'lightgrey';
         selectedType = 3;
         setSlideInfo();
+        
     });
 
     theme1.addEventListener('click', () => {
@@ -230,6 +201,7 @@
         }
     }
 
+
     addSlideBTN.addEventListener('click', async () => {
         let slide = {
             id: slideID,
@@ -276,10 +248,7 @@
 
     async function getSlides() {
         currentSlides.innerHTML = '';
-
-
         const url = `/api/getSlides/${sessionStorage.getItem('pid').split('.')[0]}`;
-
         let token = sessionStorage.getItem('SID');
 
         let headers = {
@@ -297,51 +266,8 @@
 
         let data = await result.json();
         let slides = data[0].slides;
-
-        let slideCounter = 1;
-        for (let slide of slides) {
-            slide = JSON.parse(slide);
-
-            let elem = document.createElement('div');
-            elem.classList.add('presentation-slide');
-            let html = `
-            <p>Slide No ${slideCounter}</p>
-            <span class="theme-name">${slide.theme === 1 ? 'Light Theme' : 'Dark Theme'}</span>
-            `;
-
-            if (slide.type === 1) {
-                html += `
-                    <div class="slide-body-preview">${slide.text}</div>
-                `;
-            } else if (slide.type === 2) {
-
-                html += `
-                <div class="slide-type2-preview">
-                <img src = ${slide.image} class="image-preview"> 
-                <br><br>
-                <div>${slide.text}</div>   
-                </div>
-                `;
-
-            } else if (slide.type === 3) {
-                html += '<div class="slide-body-preview">'
-                let bulletArray = slide.text.split('\n');
-                let bulletLength = bulletArray.length > 3 ? 3 : bulletArray.length;
-
-                for (let i = 0; i < bulletLength; i++) {
-                    html += bulletArray[i] + '<br>';
-                }
-                html += '</div>';
-            }
-
-            html += `<div class="slide-bottom">
-                <span class="editSlideBTN">EDIT</span>
-                <span class="deleteSlideBTN">DELETE</span>
-                </div>`;
-            elem.innerHTML = html;
-            currentSlides.appendChild(elem);
-            slideCounter++;
-        }
+        createSlidePreviews(slides);
+        
         //console.log(slides);
         if (slides.length === 0) {
             currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
@@ -349,7 +275,91 @@
         return slides;
     }
 
-    async function deleteSlide(slide_id, presentation_id) {
+    function createSlidePreviews(slides){
+        let slideCounter = 1;
+        let html = '';
+
+        for (let slide of slides) {
+            slide = JSON.parse(slide);
+            
+            //Main container for preview slides
+            let previewContainer = document.createElement('div');
+            previewContainer.classList.add('presentation-slide');
+
+            //Preview title
+            let previewTitle = document.createElement('div');
+            previewTitle.classList.add('slide-title-preview');
+            previewContainer.appendChild(previewTitle);
+            previewTitle.innerHTML = `Slide No ${slideCounter}`;
+
+            //Preview theme name
+            let previewTheme = document.createElement('div');
+            previewTheme.classList.add('slide-theme-preview');
+            previewContainer.appendChild(previewTheme);
+            if(slide.theme === 1){
+                html = 'Light';
+            } else if (slide.theme === 2){
+                html = 'Dark';
+            } else {
+                html = '';
+            }
+            previewTheme.innerHTML = html;
+
+            //Preview body
+            let previewBody = document.createElement('div');
+            previewBody.classList.add('slide-body-preview');
+            previewContainer.appendChild(previewBody);
+            if(slide.type === 1){
+                html = slide.text;
+            } else if (slide.type === 2){
+                html = `
+                    <img src=${slide.image} class="image-preview">
+                    <br><br>
+                    <div>${slide.text}<div>
+                `;
+            } else if (slide.type === 3){
+                html = '';
+                let bulletArray = slide.text.split('\n');
+                let bulletLength = bulletArray.length > 3 ? 3 : bulletArray.length;
+
+                for (let i = 0; i < bulletLength; i++) {
+                    html += bulletArray[i] + '<br>';
+                }
+            } else {
+                html = '';
+            }
+            previewBody.innerHTML = html;
+
+            //Preview button container
+            let previewButtonContainer = document.createElement('div');
+            previewBody.classList.add('slide-buttons-preview');
+            previewContainer.appendChild(previewButtonContainer);
+
+            //Preview edit slide button
+            let previewEdit = document.createElement('div');
+            previewEdit.classList.add('slide-edit-preview');
+            previewButtonContainer.appendChild(previewEdit);
+            previewEdit.innerText = 'Edit';
+            previewEdit.addEventListener('click', ()=>{
+                console.log('Edit me!');
+            })
+
+            //Preview delete slide button
+            let previewDelete = document.createElement('div');
+            previewDelete.classList.add('slide-delete-preview');
+            previewButtonContainer.appendChild(previewDelete);
+            currentSlides.appendChild(previewContainer);
+            previewDelete.innerText = 'Delete me!';
+            previewDelete.addEventListener('click', ()=>{
+                console.log('Delete me!');
+                deleteSlide(slide.id);
+            })
+
+            slideCounter++;
+        }
+    }
+
+    async function deleteSlide(slide_id) {
         const url = '/api/deleteSlide';
 
         let token = sessionStorage.getItem('SID');
@@ -360,7 +370,7 @@
         }
 
         let body = {
-            presentation_id: presentation_id,
+            presentation_id: sessionStorage.getItem('pid').split('.')[0],
             slide_id: slide_id
         }
 
