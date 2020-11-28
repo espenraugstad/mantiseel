@@ -24,6 +24,28 @@
     let showNew = document.getElementById('showNew');
     let slide = null; 
     let slideImage = null;  //Type 3 elementss
+    let saveNew = document.getElementById('saveNew');
+
+    saveNew.addEventListener('click', async ()=>{
+        updateSlideView();
+        const url = '/api/updateSlide';
+
+        const config = {
+            method: 'post',
+            headers: {
+                'content-type': 'application/json',
+                'authorization': 'Bearer ' + sessionStorage.getItem('SID')
+            },
+            body: JSON.stringify({
+                slide: slide,
+                presentationID: sessionStorage.getItem('pid').split('.')[0]
+            })
+        }
+
+        let result = await fetch(url, config);
+
+
+    });
     
 
     window.onload = async function(){
@@ -32,23 +54,21 @@
         setSlideInfo(slide);
 
         
-        let titleText = document.getElementById('titleText'); //Type 1 elements
-        
+        let titleText = document.getElementById('titleText'); //Type 1 elements  
         
         let slideText = document.getElementById('slideText'); //Type 2 & 3 elements
 
-       
-        
-        
+        showNew.addEventListener('click',updateSlideView);
+    }
 
-        showNew.addEventListener('click', ()=>{
-            if(slide.type === 1){
+    function updateSlideView(){
+        if(slide.type === 1){
                 slide.text = titleText.value;
             } else if (slide.type === 2){
                 slide.text = slideText.value.replaceAll(/\n/g,'<hr>');
-                console.log(slideImage);
+               
                 if(slideImage != null){
-                    console.log('0');
+                    
                     slide.image = slideImage;
                 }
                 //slide.image = slideImage;
@@ -58,7 +78,6 @@
             }
             
             displaySlide();
-        });
     }
 
     function setSlideInfo(slide) {

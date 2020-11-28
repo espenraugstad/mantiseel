@@ -17,7 +17,7 @@ const storage = require('./modules/storage');
 const encrypt = require('./modules/cryptCompare');
 const server = express();
 const jwt = require('./modules/jwt');
-const { decodeToken } = require('./modules/jwt');
+//const { decodeToken } = require('./modules/jwt');
 
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(express.static('public'));
@@ -155,7 +155,7 @@ server.use(authorizer);
 server.post('/api/changePassword', async (req, res)=>{
     if(req.authorized){
         let newPassword = encrypt.encryptPassword(req.headers.authorization.split(' ')[2]);
-        let username = decodeToken(req.token).username;
+        let username = jwt.decodeToken(req.token).username;
         
         let result = db.updatePassword(newPassword, username);
         if(result){
@@ -175,7 +175,7 @@ server.post('/api/updateUser', async (req, res) => {
 
 server.get('/api/deleteUser', async (req, res) => {
     if(req.authorized){
-        let decodedPayload = decodeToken(req.token);
+        let decodedPayload = jwt.decodeToken(req.token);
         
         let username = decodedPayload.username;
 
@@ -192,7 +192,7 @@ server.get('/api/deleteUser', async (req, res) => {
 server.get('/api/validUsername', async (req, res) => {
     if(req.authorized){
     
-        let decodedPayload = decodeToken(req.token);
+        let decodedPayload = jwt.decodeToken(req.token);
         let username = decodedPayload.username;
         
         res.status(200).json({ username: username }).end();
@@ -213,7 +213,7 @@ server.post('/api/makePresentation', async (req, res) => {
     }
 
     if (req.authorized) {
-        let decodedPayload = decodeToken(req.token);
+        let decodedPayload = jwt.decodeToken(req.token);
         let username = decodedPayload.username;
 
         let id = await db.addPresentation(username, presentation);
@@ -278,7 +278,7 @@ server.post('/api/sharePresentation', async (req, res) => {
 
 server.get('/api/getPresentations', async (req, res) => {
     if (req.authorized) {
-        let decodedPayload = decodeToken(req.token);
+        let decodedPayload = jwt.decodeToken(req.token);
         let username = decodedPayload.username;
 
         let result = await db.getPresentations(username);
@@ -290,26 +290,6 @@ server.get('/api/getPresentations', async (req, res) => {
             res.status(500).end();
         }
     }
-
-    /* let token = req.headers.authorization.split(' ')[1];
-
-    let valid = jwt.validateToken(token);
-    if (valid) {
-        let decodedPayload = decodeToken(token);
-        let username = decodedPayload.username;
-
-        let result = await db.getPresentations(username);
-
-        if (result) {
-            //console.log(result);
-            res.status(200).json(result).end();
-        } else {
-            res.status(500).end();
-        }
-
-    } else {
-        res.status(403).end();
-    } */
 });
 
 //Slides
@@ -331,8 +311,14 @@ server.post('/api/makeSlide', async (req, res) => {
 
 server.post('/api/updateSlide', async (req, res) => {
 
-
-    res.status(200).json(response).end();
+    if(req.authorized){
+        let result = await db.updateSlide(req.body.presentationID, req.body.slide);
+        console.log('Server: ');
+        console.log(result);
+    } else {
+        res.status(403).end();
+    }
+    
 });
 
 server.post('/api/deleteSlide', async (req, res) => {
@@ -344,6 +330,8 @@ server.post('/api/deleteSlide', async (req, res) => {
         } else {
             res.status(500).end();
         }
+    } else {
+        res.status(403).end();
     }
 });
 

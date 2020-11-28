@@ -135,6 +135,27 @@ class Storage {
         }
     }
 
+    //Update a single slide
+    async updateSlide(presentationID, slide){
+        let presentation = await this.getPresentationFromID(presentationID);
+        console.log('Storage');
+       
+        let oldSlides = presentation.slides;
+        let newSlides = [];
+        
+        for(let oldSlide of oldSlides){
+            oldSlide = JSON.parse(oldSlide);
+            if(oldSlide.id === slide.id){
+                newSlides.push(slide);
+            } else {
+                newSlides.push(oldSlide);
+            }
+        }
+        
+        let result = await this.updatePresentationSlides(presentationID, newSlides);
+        console.log(result);
+    }
+
     /* REFACTORED */
     //Get all presentations for a user
     async getPresentations(username) {
@@ -224,6 +245,7 @@ class Storage {
     /* REFACTORED */
     //Add a new presentation based on username and presentation title. Returns presentation ID
     async addPresentation(username, presentation) {
+        console.log(presentation);
         //Just add the presentation with the username as a new entry in the database
         const query = {
             text: 'INSERT INTO public.presentations (id, username, title, share, slides) VALUES (DEFAULT, $1, $2, $3, $4) RETURNING id',
