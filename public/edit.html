@@ -3,18 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/slides.css">
     <title>Edit Slide</title>
 </head>
 <body>
+    <h1>Editing Slide</h1>
+    <h3>Make Changes</h3>
+    <div id='slideInfo'>Slide info</div>
+    <br>
+    <button id="showNew" class="button-basic button-small">Show New Slide</button>
+    <br>
+    <button id="saveNew" class="button-basic button-small">Save New Slide</button>
+    <br>
     <div id="slideDIV">Her kommer sliden</div>
+    
 </body>
 <script>
     let slideDIV = document.getElementById('slideDIV');
-    let slide = getSlide();
+    let slideInfo = document.getElementById('slideInfo');
+    let showNew = document.getElementById('showNew');
+    let slide = null; 
+    let slideImage = null;  //Type 3 elementss
+    
+
+    window.onload = async function(){
+        slide = await getSlide();
+        displaySlide();
+        setSlideInfo(slide);
+
+        
+        let titleText = document.getElementById('titleText'); //Type 1 elements
+        
+        
+        let slideText = document.getElementById('slideText'); //Type 2 & 3 elements
+
+       
+        
+        
+
+        showNew.addEventListener('click', ()=>{
+            if(slide.type === 1){
+                slide.text = titleText.value;
+            } else if (slide.type === 2){
+                slide.text = slideText.value.replaceAll(/\n/g,'<hr>');
+                console.log(slideImage);
+                if(slideImage != null){
+                    console.log('0');
+                    slide.image = slideImage;
+                }
+                //slide.image = slideImage;
+            } 
+            else if (slide.type === 3){
+                slide.text = textList.value;
+            }
+            
+            displaySlide();
+        });
+    }
+
+    function setSlideInfo(slide) {
+        let html = '';
+        if (slide.type === 1) {
+            html = `
+            <label for="titleText">New title: </label>
+            <input id="titleText" type="text" />
+            `;
+            slideInfo.innerHTML = html;
+            titleText = document.getElementById('titleText');
+        } else if (slide.type === 2) {
+            html = `
+            <label for="slideText">Text: </label><br>
+            <textarea id="slideText" type="text" rows="5" cols="33"></textarea>
+            <br><br>
+            <input type="file" id="imageInput" accept="image/*">`;
+            slideInfo.innerHTML = html;
+            slideText = document.getElementById('slideText');
+            imageInput = document.getElementById('imageInput');
+            imageInput.addEventListener('change', () => {
+                let file = imageInput.files[0];
+
+                let freader = new FileReader();
+                freader.addEventListener('load', () => {
+                    console.log('loaded');
+                    slideImage = freader.result;
+                });
+                freader.readAsDataURL(file);
+            })
+        } else if (slide.type === 3) {
+            html = `<label for="textList">List (each new line is a new point):</label><br>
+            <textarea id="textList" type="text" row="5" cols="33"></textarea>`;
+            slideInfo.innerHTML = html;
+            textList = document.getElementById('textList');
+        }
+    }
+
+    function displaySlide(){
+        if (slide.type === 1) {
+            slideDIV.innerHTML = `
+            <div class="slide-container">
+            <span class="type1-box type1-box-top"></span><br><br>
+            <div class="type1-textbox">${slide.text}</div>
+            <span class="type1-box type1-box-bottom"></span><br><br>
+            </div>
+            `;
+        } else if (slide.type === 2){
+            slideDIV.innerHTML = `
+            <div class="slide-container">
+            <img class="type2-img" src = "${slide.image}">
+            <div class="type2-textbox">${slide.text.replaceAll(/\n/g,'<hr>')}</div>
+            <span class="type2-box"></span>
+            </div>
+            `;
+        } else if (slide.type === 3){
+            let html = `
+            <div class="slide-container">
+            <div class="bulletpoints">
+            <ul>`;
+
+            let bpoints = slide.text.split('\n');
+            console.log(bpoints);
+            for(let point of bpoints){
+                html += `
+                <li class="bullet">${point}</li>
+                `;
+            }
+            
+            html +=   `</ul>
+            </div>
+            <span class="type3-box1"></span>
+            <span class="type3-box2"></span>
+            <span class="type3-box3"></span>
+            </div>
+            `;
+
+            slideDIV.innerHTML = html;
+        }
+    }
+    
 
     async function getSlide(){
         //Trenger slide id og presentasjons id
         let slideID = window.location.href.split('=')[1];
+        let presentationID = sessionStorage.getItem('pid').split('.')[0];
+        
+        const url = `/api/getSlide/${presentationID}/${slideID}`;
+        
+        const config = {
+            method: 'get',
+            headers: {
+                'content-type': 'application/json',
+                'authorization': 'Bearer ' + sessionStorage.getItem('SID')
+            }
+        }
+
+        let result = await fetch(url, config);
+        let slide = await result.json();
+        if(result.status === 200){
+            return slide;
+        } else {
+            console.log('Error');
+        }
         
     }
 

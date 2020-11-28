@@ -119,6 +119,22 @@ class Storage {
 
     }
 
+    //Get single slide from a presentation
+    async getSlide(presentationID, slideID){
+        let query = {
+            text: 'SELECT slides FROM public.presentations WHERE id=$1',
+            values: [presentationID]
+        }
+
+        let [result] = await this.runQueries([query], 'getSlide');
+        for(let slide of result.rows[0].slides){
+            slide = JSON.parse(slide);
+            if(slide.id === parseInt(slideID)){
+                return slide;
+            }
+        }
+    }
+
     /* REFACTORED */
     //Get all presentations for a user
     async getPresentations(username) {

@@ -347,6 +347,18 @@ server.post('/api/deleteSlide', async (req, res) => {
     }
 });
 
+server.get('/api/getSlide/:presentationID/:slideID', async (req, res)=>{
+    //console.log(req.params);
+    if(req.authorized){
+        let slide = await db.getSlide(req.params.presentationID, req.params.slideID);
+        if(slide){
+            res.status(200).json(slide).end();
+        } else {
+            res.status(500).end();
+        }
+    }
+});
+
 
 /* ************************************************ */
 server.set('port', (process.env.PORT || 8080));

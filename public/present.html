@@ -78,7 +78,7 @@
             slideDIV.innerHTML = `
             <div class="slide-container">
             <img class="type2-img" src = "${slide.image}">
-            <div class="type2-textbox">${slide.text.replace(/\n/,'<hr>')}</div>
+            <div class="type2-textbox">${slide.text.replaceAll(/\n/g,'<hr>')}</div>
             <span class="type2-box"></span>
             </div>
             `;
