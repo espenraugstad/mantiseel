@@ -237,3 +237,8 @@ ul li:hover {
 .image-preview{
     width:50px;
 }
+
+.title-share{
+    color: lightgrey;
+    font-style: italic;
+}

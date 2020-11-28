@@ -11,7 +11,10 @@
 <body>
     <main>
         <h1>Slides</h1>
-        <p id="whichPresentation"></p>
+        <p>You are currently editing</p>
+        <p><span id="whichPresentation"></span></p>
+        <span id="toggleSharing" class='button-basic button-small'></span>
+        
         <span id="editTitle" class='button-basic button-small'>Edit Presentation Title</span>
         <span id="startPresentation" class='button-basic button-small'>Start Presentation</span>
         <h2>Create a New Slide</h2>
@@ -54,6 +57,49 @@
 
     let editTitle = document.getElementById('editTitle');
     let whichPresentation = document.getElementById('whichPresentation');
+    let toggleSharing = document.getElementById('toggleSharing');
+    let share = parseInt(sessionStorage.getItem('pid').split('.')[2]) === 1 ? "Public":"Private";
+    let toggleShare = parseInt(sessionStorage.getItem('pid').split('.')[2]) === 0 ? "Public":"Private";
+    let newShareValue = parseInt(sessionStorage.getItem('pid').split('.')[2])===1 ? 0:1;
+
+    toggleSharing.addEventListener('click', async ()=>{
+        //Getting old values
+        share = parseInt(sessionStorage.getItem('pid').split('.')[2]) === 1 ? "Public":"Private";
+        toggleShare = parseInt(sessionStorage.getItem('pid').split('.')[2]) === 0 ? "Public":"Private";
+        newShareValue = parseInt(sessionStorage.getItem('pid').split('.')[2])===1 ? 0:1;
+
+        const url = '/api/sharePresentation';
+        const config = {
+            method: 'post',
+            body: JSON.stringify({
+                share: newShareValue,
+                id: sessionStorage.getItem('pid').split('.')[0]
+            }),
+            headers: {
+                'content-type': 'application/json',
+                'authorization': 'Bearer ' + sessionStorage.getItem('SID')
+            }
+        }
+        let result = await fetch(url, config);
+        if(result.status === 200){
+            //Update pid
+            let [presID, title, oldShare] = sessionStorage.getItem('pid').split('.');
+            sessionStorage.setItem('pid', presID + "." + title + "." + newShareValue);
+
+            //Update share values
+            share = parseInt(sessionStorage.getItem('pid').split('.')[2]) === 1 ? "Public":"Private";
+            toggleShare = parseInt(sessionStorage.getItem('pid').split('.')[2]) === 0 ? "Public":"Private";
+            newShareValue = parseInt(sessionStorage.getItem('pid').split('.')[2])===1 ? 0:1;
+            
+            setPresentionTitle();
+        }
+
+    });
+
+    function setPresentionTitle(){
+        toggleSharing.innerHTML = `Change to ${toggleShare}`;
+        whichPresentation.innerHTML = `${sessionStorage.getItem('pid').split('.')[1]} <span class="title-share">(${share})<div>`;
+    }
 
     editTitle.addEventListener('click', async () => {
         let newTitle = prompt('Enter new title');
@@ -81,7 +127,8 @@
         let newPid = id + "." + newTitle + "." + share;
         sessionStorage.setItem('pid', newPid);
 
-        whichPresentation.innerHTML = `You are currently editing <br><br><br><span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span><br><br>`;
+        setPresentionTitle();
+        //whichPresentation.innerHTML = `${sessionStorage.getItem('pid').split('.')[1]} (${parseInt(sessionStorage.getItem('pid').split('.')[1]) === 0 ? "Public":"Private"})`;
     });
 
     let rawSlides = [];
@@ -98,8 +145,8 @@
 
     let currentSlides = document.getElementById('currentSlides');
 
-
-    whichPresentation.innerHTML = `You are currently editing <br><br><br><span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span><br><br>`;
+    setPresentionTitle();
+    //whichPresentation.innerHTML = `${sessionStorage.getItem('pid').split('.')[1]} (${parseInt(sessionStorage.getItem('pid').split('.')[1]) === 0 ? "Public":"Private"})`;
 
     let addSlideBTN = document.getElementById('addSlideBTN');
 
