@@ -342,6 +342,8 @@
             previewEdit.innerText = 'Edit';
             previewEdit.addEventListener('click', ()=>{
                 console.log('Edit me!');
+                location.href = `edit.html?id=${slide.id}`;
+                console.log(slide);
             })
 
             //Preview delete slide button
