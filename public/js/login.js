@@ -2,6 +2,14 @@ let username = document.getElementById('username');
 let password = document.getElementById('password');
 let loginBTN = document.getElementById('loginBTN');
 
+window.onload = async function(){
+    let sid = sessionStorage.getItem('SID');
+    if(sid === 'logout'){
+        await fetch('/api/logout', {});
+        sessionStorage.clear();
+    }
+}
+
 loginBTN.addEventListener('click', async (e)=>{
     e.preventDefault();
     if(username.value.length != 0 || password.value.length != 0){

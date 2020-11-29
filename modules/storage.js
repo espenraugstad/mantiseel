@@ -90,7 +90,12 @@ class Storage {
         }
 
         let [result] = await this.runQueries([query], 'getShareState');
-        return result.rows[0].share;
+        if(result.rows.length === 0){
+            return false;
+        } else {
+            return result.rows[0].share;
+        }
+        
     }
 
     /* REFACTORED */
