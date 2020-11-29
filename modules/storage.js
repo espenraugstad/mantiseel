@@ -289,9 +289,9 @@ class Storage {
                 values: [username, password]
             }
             await this.runQueries([query],'addUser');
-            return { msg: 'User added.' };
+            return 'ADDED';
         } else {
-            return { msg: 'User already exists' };
+            return 'EXIST';
         }
     }
 

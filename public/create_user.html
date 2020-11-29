@@ -3,15 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rouge+Script&display=swap" rel="stylesheet">       
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rouge+Script&display=swap"
+        rel="stylesheet">
     <title>Register</title>
 </head>
 
 <body>
     <main class="container-createUser">
-        <img class="navlogo" src="img/navLogo.png" alt="logo">
+        <img class="navlogo" src="img/navLogo.png"
+            alt="logo">
         <p class="signIn">Register</p>
         <label for="username">Username: </label>&nbsp;
         <input id="username" type="text" />
@@ -20,9 +24,10 @@
         <input id="password" type="password" />
         <br>
         <br>
+        <span id="outputDiv"></span>
         <br><br>
         <span class="button-basic" id="createUserBTN">
-           Register
+            Register
         </span>
     </main>
 
@@ -31,27 +36,49 @@
     let username = document.getElementById('username');
     let password = document.getElementById('password');
     let createUserBTN = document.getElementById('createUserBTN');
+    let outputDiv = document.getElementById('outputDiv');
 
-    createUserBTN.addEventListener('click', async (e) => {
-        e.preventDefault();
-        const url = '/api/makeUser';
-        const config = {
-            method: 'post',
-            body: JSON.stringify({
-                username: username.value,
-                password: password.value
-            }),
-            headers: {
-                'content-type': 'application/json'
+    window.onload = function(){
+        username.value = "";
+        password.value = "";
+    }
+
+    createUserBTN.addEventListener('click', async () => {
+        
+            const url = '/api/makeUser';
+            const config = {
+                method: 'post',
+                body: JSON.stringify({
+                    username: username.value,
+                    password: password.value
+                }),
+                headers: {
+                    'content-type': 'application/json'
+                }
             }
-        }
 
-        let response = await fetch(url, config);
-        let responseMessage = await response.json();
-        console.log(responseMessage);
-        if (responseMessage.msg.includes('added')) {
-            location.href = 'login.html';
-        }
+            let response = await fetch(url, config);
+            let responseMessage = await response.json();
+            console.log(responseMessage);
+
+            switch(responseMessage){
+                case 'ADDED':
+                    location.href = 'login.html';
+                    break;
+                case 'EXIST':
+                    outputDiv.innerText = 'User already exists';
+                    break;
+                case 'VAL0':
+                    outputDiv.innerText = 'Username or password cannot be empty';
+                    break;
+                case 'VAL1':
+                    outputDiv.innerText = 'Invalid character :';
+                    break;
+                default:
+                outputDiv.innerText = 'An error has occured';
+            }
+        
+
 
 
     });

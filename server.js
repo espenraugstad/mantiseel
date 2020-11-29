@@ -17,6 +17,7 @@ const storage = require('./modules/storage');
 const encrypt = require('./modules/cryptCompare');
 const server = express();
 const jwt = require('./modules/jwt');
+const { CLIENT_RENEG_LIMIT } = require('tls');
 //const { decodeToken } = require('./modules/jwt');
 
 server.use(bodyParser.json({ limit: '50mb' }));
@@ -37,15 +38,21 @@ const authenticator = async (req, res, next) => {
     }
 
     const credentials = req.headers.authorization.split(' ')[1];
-    const [username, password] = Buffer.from(credentials, 'base64').toString('UTF-8').split(":");
+    const [usernameENC, passwordENC] = Buffer.from(credentials, 'base64').toString('UTF-8').split(":");
+    const username = Buffer.from(usernameENC,'base64').toString('UTF-8');
+    const password = Buffer.from(passwordENC,'base64').toString('UTF-8');
     
     //Retrieve username and password from database
     let passwordFromDB;
+    console.log(username, password);
     if (username) {
         let data = await db.getUser(username);
-        if (!data) {
+        console.log('Data:');
+        console.log(data);
+        if (data === undefined) {
             console.log('User does not exist');
-            return;
+            //req.login = false;
+            return next();
         } else {
             passwordFromDB = data.password;
         }
@@ -88,14 +95,12 @@ const authorizer = async (req, res, next) => {
 
 /* BASIC AUTHENTICATION FOR LOGIN */
 server.post('/api/login', authenticator, async (req, res) => {
-
     if (req.login) {
         //If login successful - generate token to send along
         let token = jwt.generateToken({ username: req.user });
         res.status(200).json(token);
     } else {
-
-        res.status(403).send('Nope').end();
+        res.status(403).end();
     }
 });
 
@@ -108,6 +113,16 @@ server.post('/api/makeUser', async (req, res) => {
 
     let username = req.body.username;
     let password = req.body.password;
+
+    //Validation
+    if(username.length === 0 || password.length === 0){
+        res.status(200).json('VAL0').end();
+        return;
+    }
+
+    /* if(username.includes(':') || password.includes(':')){
+        res.status(200).json('VAL1').end();
+    } */
 
     //Hash password
     password = encrypt.encryptPassword(password);
