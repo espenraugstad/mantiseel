@@ -10,5 +10,4 @@ function getPID(){
     let pidArray = sessionStorage.getItem('pid').split('.');
     pidArray[1] = window.atob(pidArray[1]);
     return pidArray;
-
 }

@@ -39,13 +39,14 @@
             },
             body: JSON.stringify({
                 slide: slide,
-                presentationID: getPid()[0]//sessionStorage.getItem('pid').split('.')[0]
+                presentationID: getPID()[0]
             })
         }
 
         let result = await fetch(url, config);
-
-
+        if(result.status === 200){
+            location.href = 'slides.html';
+        }
     });
     
 

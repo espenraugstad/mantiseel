@@ -377,7 +377,7 @@
             } else if (slide.type === 2){
                 html = `
                     <img src=${slide.image} class="image-preview">
-                    <br><br>
+                    
                     <div>${slide.text}<div>
                 `;
             } else if (slide.type === 3){
@@ -395,7 +395,7 @@
 
             //Preview button container
             let previewButtonContainer = document.createElement('div');
-            previewBody.classList.add('slide-buttons-preview');
+            previewButtonContainer.classList.add('slide-buttons-preview');
             previewContainer.appendChild(previewButtonContainer);
 
             //Preview edit slide button

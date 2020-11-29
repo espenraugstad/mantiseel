@@ -323,8 +323,9 @@ server.post('/api/updateSlide', async (req, res) => {
 
     if(req.authorized){
         let result = await db.updateSlide(req.body.presentationID, req.body.slide);
-        console.log('Server: ');
-        console.log(result);
+        if(result){
+            res.status(200).end();
+        }
     } else {
         res.status(403).end();
     }

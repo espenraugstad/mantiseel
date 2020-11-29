@@ -158,7 +158,7 @@ class Storage {
         }
         
         let result = await this.updatePresentationSlides(presentationID, newSlides);
-        console.log(result);
+        return result;
     }
 
     /* REFACTORED */
