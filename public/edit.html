@@ -3,23 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/slides.css">
+    <link rel="stylesheet" href="./css/slides.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;1,100&display=swap" rel="stylesheet"> 
     <script src="./js/clientStorage.js"></script>
     <title>Edit Slide</title>
 </head>
 <body>
+    <div class="navbar">
+        <div class="logo">
+            <img src="img/logo_navbar2.jpg" class="logoImg" />
+        </div>
+        <nav>
+            <ul>
+                <li class="nav-item" onclick='location.href="home.html"'>Dashboard</li>
+                <li class="nav-item" onclick='location.href="slides.html"'>Slides</li>
+                <li class="nav-item" id="deleteUserBTN">Delete User</li>
+                <li class="nav-item" id="signOut">Sign Out</li>
+            </ul>
+        </nav>
+    </div>
+    <hr>
+   
     <h1>Editing Slide</h1>
     <h3>Make Changes</h3>
     <div id='slideInfo'>Slide info</div>
     <br>
-    <button id="showNew" class="button-basic button-small">Show New Slide</button>
-    <br>
-    <button id="saveNew" class="button-basic button-small">Save New Slide</button>
-    <br>
+    <span id="showNew" class="button-basic button-small">Show New Slide</span>
+    
+    <span id="saveNew" class="button-basic button-small">Save New Slide</span>
+    <br><br><br>
     <div id="slideDIV">Her kommer sliden</div>
     
 </body>
 <script>
+    let deleteUserBTN = document.getElementById('deleteUserBTN');
+    deleteUserBTN.addEventListener('click', async ()=>{
+        let confirmDelete = confirm('Are you sure you want to delete your account?\n All your presentations will also be deleted!');
+        if(confirmDelete){
+            const url = '/api/deleteUser';
+
+            const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + sessionStorage.getItem('SID')
+            }
+
+            const config = {
+                method: 'get',
+                headers: headers
+            }
+
+            let response = await fetch(url, config);
+            console.log(response);
+
+        }
+    });
+
     let slideDIV = document.getElementById('slideDIV');
     let slideInfo = document.getElementById('slideInfo');
     let showNew = document.getElementById('showNew');
@@ -188,4 +227,5 @@
     }
 
 </script>
+<script src="./js/logout.js"></script>
 </html>

@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;1,200;1,400&display=swap" rel="stylesheet">  
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/slides.css">
     <title>Presenting</title>
 </head>
@@ -11,7 +12,7 @@
 <body>
     <div id="slideDIV"></div>
     <div id="nav-buttons">
-        <button id="prev">Previous slide</button><button id="next">Next slide</button>
+        <span class="button-basic button-small" id="prev">Previous slide</span><span class="button-basic button-small" id="next">Next slide</span>
     </div>
 </body>
 <script>
@@ -38,21 +39,6 @@
         console.log(slideIndex);
     })
 
-    //Slett?
-    let htmlType3 = `
-    <div class="slide-container">
-        <div class="bulletpoints">
-            <ul>
-                <li class="bullet">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius vitae explicabo labore, voluptatibus ratione sint sed! Voluptas earum labore excepturi illum a saepe molestiae? Nemo labore officia consectetur reprehenderit? Hic.</li>
-                <li class="bullet">Point 2</li>
-                <li class="bullet">Point 3</li>
-            </ul>
-        </div>
-            <span class="type3-box1"></span>
-            <span class="type3-box2"></span>
-            <span class="type3-box3"></span>
-    </div>
-    `;
 
     window.onload = async function () {
         slides = await getSlides();

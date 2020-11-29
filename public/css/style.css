@@ -4,6 +4,7 @@ body {
     color: #6b6b6b;
   }
 
+
 .navbar {
   clear: both;
   overflow: auto;
@@ -13,12 +14,21 @@ nav {
     float: right;
 }
 
+hr {
+    border: .1px solid #6b6b6b;
+    
+}
+
+.nav-item {
+    cursor: pointer;
+}
+
 .logo .logoImg {
   float: right;
   padding-left: 20px;
 }
 
-ul li {
+nav>ul>li {
   color: #989695;
   display: inline-block; 
   padding-left: 20px;
@@ -48,6 +58,10 @@ ul li:hover {
     font-weight: 600;
     font-size: 2em;
     color: rgb(152, 149, 148)
+}
+
+main{
+    padding-left: 10px;
 }
 
 .container-index {
@@ -134,6 +148,7 @@ ul li:hover {
     font-size: 1em;
     padding: 5px 15px;
     margin: 5px;
+    cursor: pointer;
 }
 
 .button-small {
@@ -170,11 +185,11 @@ ul li:hover {
 .presentation-slide{
     display: flex;
     flex-direction: column; 
-    border: 1px solid black;
+    border: 1px solid lightgrey;
     text-align: center;
-    min-height: 200px;
-    width: 200px;
-    min-width: 200px;
+    width: 250px;
+    min-width: 250px;
+    height: 187.5px;
     margin-right: 40px;
     margin-bottom: 20px;
 }
@@ -192,8 +207,10 @@ ul li:hover {
 
 
 .slide-title-preview{
+    font-weight: bolder;
+    color: grey;
     height: 15%;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid lightgrey;
 }
 
 .slide-theme-preview{
@@ -202,9 +219,11 @@ ul li:hover {
     color: rgba(0,0,0,.20);
 }
 
-.slide-body-preview{
-    font-weight: bolder;
-    height: 45%;
+.slide-body-preview{ 
+    font-weight: 400;
+    font-style: italic;
+    font-family: 'Poppins', sans-serif;
+    height: 50%;
 }
 
 .slide-body-preview>div>hr{
@@ -220,24 +239,29 @@ ul li:hover {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    height: 20%;
-    border-top: 1px solid black;
+    height: 15%;
+    border-top: 1px solid lightgrey;
 }
 
 .slide-edit-preview{
     flex: 0.7;
     padding: 1rem;
-    border-right: 1px solid black;
-    
-    cursor: pointer;
-    
+    border-right: 1px solid lightgrey; 
+    cursor: pointer; 
+}
+
+.slide-edit-preview:hover{
+    background: rgb(204, 194, 192);
 }
 
 .slide-delete-preview{
     flex: 1;
-    padding: 1rem;
-    
+    padding: 1rem;   
     cursor: pointer;
+}
+
+.slide-delete-preview:hover{
+    background: rgb(204, 194, 192);
 }
 
 .slide-bottom{

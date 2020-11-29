@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;1,200;1,400&display=swap" rel="stylesheet">  
     <script src="./js/clientStorage.js"></script>
     <title>Slides</title>
 </head>
@@ -16,21 +18,28 @@
         </div>
         <nav>
             <ul>
-                <li>Dashboard</li>
-                <li id="deleteUserBTN">Delete User</li>
-                <li id="signOut">Sign Out</li>
+                <li class="nav-item" onclick='location.href="home.html"'>Dashboard</li>
+                <li class="nav-item" id="deleteUserBTN">Delete User</li>
+                <li class="nav-item" id="signOut">Sign Out</li>
             </ul>
         </nav>
     </div>
     <hr>
     <main>
-        <h1>Slides</h1>
+        <h1 class="home">Slides</h1>
         <p>You are currently editing</p>
-        <p><span id="whichPresentation"></span></p>
-        <span id="toggleSharing" class='button-basic button-small'></span>
+        <br>
+        <span id="whichPresentation" class="username"></span>
         
+        <br>
+        <br>
+        
+        <span id="toggleSharing" class='button-basic button-small'></span>
         <span id="editTitle" class='button-basic button-small'>Edit Presentation Title</span>
         <span id="startPresentation" class='button-basic button-small'>Start Presentation</span>
+        
+        <br><br><br>
+        <hr><br>
         <h2>Create a New Slide</h2>
 
         <div id="newSlideOptions">
@@ -55,7 +64,10 @@
         <h3>Enter information</h3>
         <div id="slideInfo"></div>
         <br>
-        <button id="addSlideBTN">Add Slide</button>
+        <span class="button-basic button-small" id="addSlideBTN">Add Slide</span>
+
+        <br><br><br>
+        <hr><br>
 
         <div class="list-box">
             <h2>Current slides</h2>
@@ -68,6 +80,27 @@
     </main>
 </body>
 <script>
+    let deleteUserBTN = document.getElementById('deleteUserBTN');
+    deleteUserBTN.addEventListener('click', async ()=>{
+        let confirmDelete = confirm('Are you sure you want to delete your account?\n All your presentations will also be deleted!');
+        if(confirmDelete){
+            const url = '/api/deleteUser';
+
+            const headers = {
+            'content-type': 'application/json',
+            'authorization': 'Bearer ' + sessionStorage.getItem('SID')
+            }
+
+            const config = {
+                method: 'get',
+                headers: headers
+            }
+
+            let response = await fetch(url, config);
+            console.log(response);
+
+        }
+    });
 
     let editTitle = document.getElementById('editTitle');
     let whichPresentation = document.getElementById('whichPresentation');
