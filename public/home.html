@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;1,100&display=swap" rel="stylesheet">   
+    <script src="./js/clientStorage.js"></script>
     
     <title>Home</title>
 </head>
@@ -179,7 +180,8 @@
             presentations.appendChild(elem);
 
             elem.children[1].addEventListener('click', ()=>{
-                sessionStorage.setItem('pid', presentation.id+"."+presentation.title+"."+presentation.share);
+                //sessionStorage.setItem('pid', presentation.id+"."+presentation.title+"."+presentation.share);
+                setPID([presentation.id, presentation.title, presentation.share]);
                 location.href='slides.html';
             });
 
