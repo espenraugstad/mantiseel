@@ -123,7 +123,7 @@ server.get('/api/getSlides/:presentation_id', async (req, res) => {
 
     let shareState = await db.getShareState(req.params.presentation_id);
     
-    if(!shareState){
+    if(shareState === false){
         console.log('Share state is undefined');
         res.status(404).end();
     }
