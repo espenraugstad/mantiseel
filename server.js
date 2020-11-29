@@ -100,6 +100,10 @@ server.post('/api/login', authenticator, async (req, res) => {
 });
 
 /* AVAILABLE WITHOUT FULL AUTHORIZATION OR AUTHENTICATION */
+server.post('/api/logout', (req, res)=>{
+    res.status(401).end();
+});
+
 server.post('/api/makeUser', async (req, res) => {
 
     let username = req.body.username;
@@ -118,6 +122,12 @@ server.post('/api/makeUser', async (req, res) => {
 server.get('/api/getSlides/:presentation_id', async (req, res) => {
 
     let shareState = await db.getShareState(req.params.presentation_id);
+    
+    if(!shareState){
+        console.log('Share state is undefined');
+        res.status(404).end();
+    }
+    
 
     //1 is public, 0 is private
     if (shareState === 1) {
