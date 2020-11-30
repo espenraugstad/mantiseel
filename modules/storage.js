@@ -140,7 +140,6 @@ class Storage {
         }
     }
 
-    //Update a single slide
     async updateSlide(presentationID, slide){
         let presentation = await this.getPresentationFromID(presentationID);
         console.log('Storage');
@@ -161,8 +160,7 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Get all presentations for a user
+    
     async getPresentations(username) {
         const query = {
             text: 'SELECT * FROM public.presentations WHERE username = $1 ORDER BY id;',
@@ -173,8 +171,6 @@ class Storage {
         return result.rows;
     }
 
-    /* REFACTORED */
-    //Share/unshare presentation
     async sharePresentation(id, share) {
         const query = {
             text: 'UPDATE public.presentations SET share = $1 WHERE id = $2;',
@@ -185,24 +181,14 @@ class Storage {
         return result;
     }
 
-    //Add slide to a presentation with a given id
     async createSlide(id, slide) {
 
-        //Step 1: Get the presentation from the database 
         let presentation = await this.getPresentationFromID(id);
-
-
-        //Step 2: Add the slide to the presentation
         presentation.slides.push(slide);
-
-
-        //Step 3: Update the presentation in the database
-        //update presentation updatePresentation(id, newTitle <String>, newShare <Number>, newSlides <Array>)
         let result = await this.changeSlides(presentation.slides, id);
         return result;
     }
 
-    /* REFACTORED */
     async changeSlides(newSlides, id) {
         const query = {
             text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
@@ -213,7 +199,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
     async getPresentationFromID(id) {
         const query = {
             text: 'SELECT * FROM public.presentations WHERE id = $1',
@@ -223,7 +208,6 @@ class Storage {
         let [result] = await this.runQueries([query],'getPresentationFromID');
         return result.rows[0];
     }
-
 
     async deleteSlide(presentation_id, slide_id) {
         let presentation = await this.getPresentationFromID(presentation_id);
@@ -236,7 +220,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
     async updatePresentationSlides(presentation_id, newSlides) {
         const query = {
             text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
@@ -247,8 +230,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Add a new presentation based on username and presentation title. Returns presentation ID
     async addPresentation(username, presentation) {
         console.log(presentation);
         //Just add the presentation with the username as a new entry in the database
