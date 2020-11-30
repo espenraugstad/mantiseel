@@ -17,14 +17,12 @@ const storage = require('./modules/storage');
 const encrypt = require('./modules/cryptCompare');
 const server = express();
 const jwt = require('./modules/jwt');
-const { CLIENT_RENEG_LIMIT } = require('tls');
-//const { decodeToken } = require('./modules/jwt');
 
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(express.static('public'));
 
-const credentials = require('./localenv').DATABASE_URL || process.env.DATABASE_URL;
-const secret = require('./localenv').HASH_SECRET || process.env.HASH_SECRET;
+const credentials = process.env.DATABASE_URL ||require('./localenv').DATABASE_URL;
+const secret = process.env.HASH_SECRET || require('./localenv').HASH_SECRET;
 const db = new storage(credentials);
 
 /* **************** MIDDLEWARE ************************** */
