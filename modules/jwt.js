@@ -1,6 +1,6 @@
 //https://jwt.io/
 
-const tokenSecret = require('../localenv').TOKEN_SECRET;
+const tokenSecret = process.env.TOKEN_SECRET || require('../localenv').TOKEN_SECRET;
 const crypto = require('crypto');
 
 function generateToken(payload){
