@@ -78,8 +78,6 @@
 
         let result = await fetch(url, config);
         let message = await result.json();
-        console.log(message);
-
     });
 
     deleteUserBTN.addEventListener('click', async ()=>{
@@ -159,8 +157,6 @@
         }
 
         for(let presentation of data){           
-            console.log(presentation.share);
-            //Create element for presentation
             let elem = document.createElement('div');
             elem.classList.add('presentation-card');
             let html = `
@@ -181,7 +177,6 @@
             presentations.appendChild(elem);
 
             elem.children[1].addEventListener('click', ()=>{
-                //sessionStorage.setItem('pid', presentation.id+"."+presentation.title+"."+presentation.share);
                 setPID([presentation.id, presentation.title, presentation.share]);
                 location.href='slides.html';
             });
@@ -238,7 +233,6 @@
 
         let response = await fetch(url, config);
         let data = await response.json();
-        console.log(data);
 
         username.innerHTML = `<span class="username">${data.username}<span>`;
     }

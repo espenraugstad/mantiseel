@@ -184,7 +184,6 @@ main{
     margin-bottom: 40px;
 }
 
-/* Styling slide previews */
 .presentation-slide{
     display: flex;
     flex-direction: column; 
@@ -267,10 +266,6 @@ main{
     background: rgb(204, 194, 192);
 }
 
-.slide-bottom{
-
-}
-
 .share{
     height: 70%;
     color: lightgrey;
@@ -312,14 +307,6 @@ main{
     color: lightgrey;
     font-style: oblique;
 }
-
-
-
-.slide-bottom-preview{
-
-}
-
-
 
 .title-share{
     color: lightgrey;

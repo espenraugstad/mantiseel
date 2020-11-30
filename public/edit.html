@@ -65,7 +65,7 @@
     let slideInfo = document.getElementById('slideInfo');
     let showNew = document.getElementById('showNew');
     let slide = null; 
-    let slideImage = null;  //Type 3 elementss
+    let slideImage = null;
     let saveNew = document.getElementById('saveNew');
 
     saveNew.addEventListener('click', async ()=>{
@@ -97,9 +97,9 @@
         setSlideInfo(slide);
 
         
-        let titleText = document.getElementById('titleText'); //Type 1 elements  
+        let titleText = document.getElementById('titleText');
         
-        let slideText = document.getElementById('slideText'); //Type 2 & 3 elements
+        let slideText = document.getElementById('slideText');
 
         showNew.addEventListener('click',updateSlideView);
     }
@@ -114,7 +114,6 @@
                     
                     slide.image = slideImage;
                 }
-                //slide.image = slideImage;
             } 
             else if (slide.type === 3){
                 slide.text = textList.value;
@@ -146,7 +145,6 @@
 
                 let freader = new FileReader();
                 freader.addEventListener('load', () => {
-                    console.log('loaded');
                     slideImage = freader.result;
                 });
                 freader.readAsDataURL(file);
@@ -183,7 +181,7 @@
             <ul>`;
 
             let bpoints = slide.text.split('\n');
-            console.log(bpoints);
+            
             for(let point of bpoints){
                 html += `
                 <li class="bullet">${point}</li>
@@ -204,9 +202,8 @@
     
 
     async function getSlide(){
-        //Trenger slide id og presentasjons id
         let slideID = window.location.href.split('=')[1];
-        let presentationID = getPID()[0];//sessionStorage.getItem('pid').split('.')[0];
+        let presentationID = getPID()[0];
         
         const url = `/api/getSlide/${presentationID}/${slideID}`;
         
@@ -223,7 +220,7 @@
         if(result.status === 200){
             return slide;
         } else {
-            console.log('Error');
+            return {};
         }
         
     }

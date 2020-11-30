@@ -31,7 +31,6 @@ loginBTN.addEventListener('click', async ()=>{
         }
         
         let response = await fetch(url, config);
-        console.log(response.status);
         if(response.status === 200){
             let token = await response.json();
             sessionStorage.clear();

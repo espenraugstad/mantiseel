@@ -1,8 +1,5 @@
 function setPID(pidArray){
-    //Encode presentation title
     pidArray[1] = window.btoa(pidArray[1]);
-
-    //Set session storage
     sessionStorage.setItem('pid', pidArray[0]+"."+pidArray[1]+"."+pidArray[2]);
 }
 

@@ -12,13 +12,7 @@ class Storage {
     }
 
     async runQueries(queries, caller){
-        //queries: array of queries
-        //caller: name of the function in which this function is called
-
-        //Create a new client
         const client = new pg.Client(this.credentials);
-
-        //Connect to database
         try {
             await client.connect();
         } catch (err) {
@@ -27,7 +21,6 @@ class Storage {
             return err;
         }
 
-        //Run queries and store results in results-array
         let results = [];
         for(let query of queries){
             try{
@@ -62,8 +55,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Delete user and all their presentations!
     async deleteUser(username) {
 
         const queries = [
@@ -81,8 +72,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Get share state from database
     async getShareState(id) {
         const query = {
             text: 'SELECT share FROM public.presentations WHERE id = $1',
@@ -98,8 +87,6 @@ class Storage {
         
     }
 
-    /* REFACTORED */
-    //Delete presentation
     async deletePresentation(id) {
         const query = {
             text: 'DELETE FROM public.presentations WHERE id = $1',
@@ -110,8 +97,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Get all slides from a presentation
     async getSlides(presentation_id) {
 
         const query = {
@@ -124,7 +109,6 @@ class Storage {
 
     }
 
-    //Get single slide from a presentation
     async getSlide(presentationID, slideID){
         let query = {
             text: 'SELECT slides FROM public.presentations WHERE id=$1',
@@ -142,7 +126,6 @@ class Storage {
 
     async updateSlide(presentationID, slide){
         let presentation = await this.getPresentationFromID(presentationID);
-        console.log('Storage');
        
         let oldSlides = presentation.slides;
         let newSlides = [];
@@ -231,8 +214,6 @@ class Storage {
     }
 
     async addPresentation(username, presentation) {
-        console.log(presentation);
-        //Just add the presentation with the username as a new entry in the database
         const query = {
             text: 'INSERT INTO public.presentations (id, username, title, share, slides) VALUES (DEFAULT, $1, $2, $3, $4) RETURNING id',
             values: [username, presentation.title, presentation.share, presentation.slides]
@@ -242,8 +223,6 @@ class Storage {
         return results[0].rows[0].id;
     }
 
-    /* REFACTORED */
-    //Get information about a user based on username. Only returns password.
     async getUser(username) {
         const query = {
             text: 'SELECT password FROM public.users WHERE username = $1',
@@ -254,8 +233,6 @@ class Storage {
         return response.rows[0]; 
     }
 
-    /* REFACTORED */
-    //Adds a user with a given username and password
     async addUser(username, password) {
         let query = {
             text: 'SELECT * FROM public.users WHERE username = $1',

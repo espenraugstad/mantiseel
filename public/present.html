@@ -28,7 +28,6 @@
             slideIndex--;
         }
         showSlide(slideIndex);
-        console.log(slideIndex);
     });
 
     next.addEventListener('click', ()=>{
@@ -36,14 +35,11 @@
             slideIndex++;
         }
         showSlide(slideIndex);
-        console.log(slideIndex);
     })
 
 
     window.onload = async function () {
         slides = await getSlides();
-        //console.log(JSON.parse(slides[0]));
-        console.log(slides);
         if(slides.length > 0){
             showSlide(slideIndex);
         } else {
@@ -55,7 +51,6 @@
 
     function showSlide(slideIndex) {
         let slide = JSON.parse(slides[slideIndex]);
-        console.log(slide);
         if (slide.type === 1) {
             slideDIV.innerHTML = `
             <div class="slide-container">
@@ -80,7 +75,6 @@
             <ul>`;
 
             let bpoints = slide.text.split('\n');
-            console.log(bpoints);
             for(let point of bpoints){
                 html += `
                 <li class="bullet">${point}</li>
@@ -102,8 +96,6 @@
 
 
     async function getSlides() {
-        //let presentation_id = sessionStorage.getItem('pid').split('.')[0];
-        //Get pres id from url
         let presentation_id = window.location.href.split('=')[1];
       
         let token = sessionStorage.getItem('SID');

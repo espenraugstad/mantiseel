@@ -112,7 +112,6 @@
     let newShareValue = parseInt(getPID()[2])===1 ? 0:1;
 
     toggleSharing.addEventListener('click', async ()=>{
-        //Getting old values
         share = parseInt(getPID()[2]) === 1 ? "Public":"Private";
         toggleShare = parseInt(getPID()[2]) === 0 ? "Public":"Private";
         newShareValue = parseInt(getPID()[2])===1 ? 0:1;
@@ -131,12 +130,8 @@
         }
         let result = await fetch(url, config);
         if(result.status === 200){
-            //Update pid
             let [presID, title, oldShare] = getPID();
             setPID([presID, title, newShareValue]);
-            //sessionStorage.setItem('pid', presID + "." + title + "." + newShareValue);
-
-            //Update share values
             share = parseInt(getPID()[2]) === 1 ? "Public":"Private";
             toggleShare = parseInt(getPID()[2]) === 0 ? "Public":"Private";
             newShareValue = parseInt(getPID()[2])===1 ? 0:1;
@@ -171,15 +166,10 @@
         let result = await fetch(url, config);
         let message = await result.message;
 
-        //Oppdatere pid i session storage
         let [id, title, share] = getPID();
-
-        //let newPid = id + "." + newTitle + "." + share;
-        //sessionStorage.setItem('pid', newPid);
         setPID([id, newTitle, share]);
 
         setPresentionTitle();
-        //whichPresentation.innerHTML = `${sessionStorage.getItem('pid').split('.')[1]} (${parseInt(sessionStorage.getItem('pid').split('.')[1]) === 0 ? "Public":"Private"})`;
     });
 
     let rawSlides = [];
@@ -197,7 +187,6 @@
     let currentSlides = document.getElementById('currentSlides');
 
     setPresentionTitle();
-    //whichPresentation.innerHTML = `${sessionStorage.getItem('pid').split('.')[1]} (${parseInt(sessionStorage.getItem('pid').split('.')[1]) === 0 ? "Public":"Private"})`;
 
     let addSlideBTN = document.getElementById('addSlideBTN');
 
@@ -220,14 +209,12 @@
 
     let slideInfo = document.getElementById('slideInfo');
 
-    //Default values
     let selectedType = 1;
     type1.style.background = 'lightgrey';
     setSlideInfo();
     let selectedTheme = 1;  
     theme1.style.background = 'lightgrey';
 
-    //Event listeners for selection
     type1.addEventListener('click', () => {
         type1.style.background = 'lightgrey';
         type2.style.background = 'white';
@@ -318,9 +305,7 @@
             slide.text = textList.value;
         }
         slideID++;
-        console.log(slide);
 
-        //Server
         const url = '/api/makeSlide';
         let token = sessionStorage.getItem('SID');
 
@@ -366,7 +351,6 @@
         let slides = data[0].slides;
         createSlidePreviews(slides);
         
-        //console.log(slides);
         if (slides.length === 0) {
             currentSlides.innerHTML = "<p>This presentation doesn't have any slides yet.</p>";
         }
@@ -380,17 +364,14 @@
         for (let slide of slides) {
             slide = JSON.parse(slide);
             
-            //Main container for preview slides
             let previewContainer = document.createElement('div');
             previewContainer.classList.add('presentation-slide');
 
-            //Preview title
             let previewTitle = document.createElement('div');
             previewTitle.classList.add('slide-title-preview');
             previewContainer.appendChild(previewTitle);
             previewTitle.innerHTML = `Slide No ${slideCounter}`;
 
-            //Preview theme name
             let previewTheme = document.createElement('div');
             previewTheme.classList.add('slide-theme-preview');
             previewContainer.appendChild(previewTheme);
@@ -403,7 +384,6 @@
             }
             previewTheme.innerHTML = html;
 
-            //Preview body
             let previewBody = document.createElement('div');
             previewBody.classList.add('slide-body-preview');
             previewContainer.appendChild(previewBody);
@@ -428,30 +408,24 @@
             }
             previewBody.innerHTML = html;
 
-            //Preview button container
             let previewButtonContainer = document.createElement('div');
             previewButtonContainer.classList.add('slide-buttons-preview');
             previewContainer.appendChild(previewButtonContainer);
 
-            //Preview edit slide button
             let previewEdit = document.createElement('div');
             previewEdit.classList.add('slide-edit-preview');
             previewButtonContainer.appendChild(previewEdit);
             previewEdit.innerText = 'Edit';
             previewEdit.addEventListener('click', ()=>{
-                console.log('Edit me!');
                 location.href = `edit.html?id=${slide.id}`;
-                console.log(slide);
             })
 
-            //Preview delete slide button
             let previewDelete = document.createElement('div');
             previewDelete.classList.add('slide-delete-preview');
             previewButtonContainer.appendChild(previewDelete);
             currentSlides.appendChild(previewContainer);
             previewDelete.innerText = 'Delete me!';
             previewDelete.addEventListener('click', ()=>{
-                console.log('Delete me!');
                 deleteSlide(slide.id);
             })
 
