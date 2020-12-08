@@ -166,6 +166,8 @@ ul li:hover {
     margin-bottom: 40px;
 }
 
+
+
 .presentation-slide{
     display: flex;
     flex-direction: column;
@@ -177,9 +179,6 @@ ul li:hover {
     margin-right: 40px;
 }
 
-.slide-bottom{
-
-}
 
 .share{
     height: 70%;
@@ -230,10 +229,11 @@ ul li:hover {
     padding: 15px 0;
 }
 
-.slide-bottom-preview{
-
-}
 
 .image-preview{
     width:50px;
+}
+
+.container-new-slides {
+    display: flex;
 }

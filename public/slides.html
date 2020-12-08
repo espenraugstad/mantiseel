@@ -5,10 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rouge+Script&display=swap" rel="stylesheet">       
     <title>Slides</title>
 </head>
 
 <body>
+
+    <div class="navbar">
+        <div class="logo">
+            <img src="img/logo_navbar2.jpg" class="logoImg" />
+        </div>
+        <nav>
+            <ul>
+                <li>Dashboard</li>
+                <li id="deleteUserBTN">Delete User</li>
+                <li>Sign Out</li>
+            </ul>
+        </nav>
+    </div>
+    <hr>
+
     <main>
         <h1>Slides</h1>
         <p id="whichPresentation"></p>
@@ -16,21 +32,23 @@
         <span id="startPresentation" class='button-basic button-small'>Start Presentation</span>
         <h2>Create a New Slide</h2>
 
-        <div id="newSlideOptions">
-            <h3>Select Slide Type</h3>
-            <div id="typeOptions" class="optionGroup">
-                <div class="slide-option" id="type1">Title
+        <div class="container-new-slides">
+            <div id="newSlideOptions">
+                <h3>Select Slide Type</h3>
+                <div id="typeOptions" class="optionGroup">
+                    <div class="slide-option" id="type1">Title
+                    </div>
+                    <div class="slide-option" id="type2">Text
+                        With Image</div>
+                    <div class="slide-option" id="type3">List
+                    </div>
                 </div>
-                <div class="slide-option" id="type2">Text
-                    With Image</div>
-                <div class="slide-option" id="type3">List
-                </div>
-            </div>
-            <h3>Select Slide Theme</h3>
-            <div id="themeOptions" class="optionGroup">
-                <div class="slide-option" id="theme1">Light
-                </div>
-                <div class="slide-option" id="theme2">Dark
+                <h3>Select Slide Theme</h3>
+                <div id="themeOptions" class="optionGroup">
+                    <div class="slide-option" id="theme1">Light
+                    </div>
+                    <div class="slide-option" id="theme2">Dark
+                    </div>
                 </div>
             </div>
         </div>
@@ -46,7 +64,6 @@
                 <p>You don't currently have any slides.</p>
             </div>
         </div>
-
 
     </main>
 </body>
@@ -81,7 +98,8 @@
         let newPid = id + "." + newTitle + "." + share;
         sessionStorage.setItem('pid', newPid);
 
-        whichPresentation.innerHTML = `You are currently editing <br><br><br><span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span><br><br>`;
+        // Fjernet <br>s - forandrer seg ikke på nettsiden
+        whichPresentation.innerHTML = `You are currently editing <br><span id="presentation-title">${sessionStorage.getItem('pid').split('.')[1]}<span>`;
     });
 
     let rawSlides = [];
