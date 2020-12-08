@@ -12,13 +12,7 @@ class Storage {
     }
 
     async runQueries(queries, caller){
-        //queries: array of queries
-        //caller: name of the function in which this function is called
-
-        //Create a new client
         const client = new pg.Client(this.credentials);
-
-        //Connect to database
         try {
             await client.connect();
         } catch (err) {
@@ -27,7 +21,6 @@ class Storage {
             return err;
         }
 
-        //Run queries and store results in results-array
         let results = [];
         for(let query of queries){
             try{
@@ -62,8 +55,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Delete user and all their presentations!
     async deleteUser(username) {
 
         const queries = [
@@ -81,8 +72,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Get share state from database
     async getShareState(id) {
         const query = {
             text: 'SELECT share FROM public.presentations WHERE id = $1',
@@ -90,11 +79,14 @@ class Storage {
         }
 
         let [result] = await this.runQueries([query], 'getShareState');
-        return result.rows[0].share;
+        if(result.rows.length === 0){
+            return false;
+        } else {
+            return result.rows[0].share;
+        }
+        
     }
 
-    /* REFACTORED */
-    //Delete presentation
     async deletePresentation(id) {
         const query = {
             text: 'DELETE FROM public.presentations WHERE id = $1',
@@ -105,8 +97,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Get all slides from a presentation
     async getSlides(presentation_id) {
 
         const query = {
@@ -119,8 +109,41 @@ class Storage {
 
     }
 
-    /* REFACTORED */
-    //Get all presentations for a user
+    async getSlide(presentationID, slideID){
+        let query = {
+            text: 'SELECT slides FROM public.presentations WHERE id=$1',
+            values: [presentationID]
+        }
+
+        let [result] = await this.runQueries([query], 'getSlide');
+        for(let slide of result.rows[0].slides){
+            slide = JSON.parse(slide);
+            if(slide.id === parseInt(slideID)){
+                return slide;
+            }
+        }
+    }
+
+    async updateSlide(presentationID, slide){
+        let presentation = await this.getPresentationFromID(presentationID);
+       
+        let oldSlides = presentation.slides;
+        let newSlides = [];
+        
+        for(let oldSlide of oldSlides){
+            oldSlide = JSON.parse(oldSlide);
+            if(oldSlide.id === slide.id){
+                newSlides.push(slide);
+            } else {
+                newSlides.push(oldSlide);
+            }
+        }
+        
+        let result = await this.updatePresentationSlides(presentationID, newSlides);
+        return result;
+    }
+
+    
     async getPresentations(username) {
         const query = {
             text: 'SELECT * FROM public.presentations WHERE username = $1 ORDER BY id;',
@@ -131,8 +154,6 @@ class Storage {
         return result.rows;
     }
 
-    /* REFACTORED */
-    //Share/unshare presentation
     async sharePresentation(id, share) {
         const query = {
             text: 'UPDATE public.presentations SET share = $1 WHERE id = $2;',
@@ -143,24 +164,14 @@ class Storage {
         return result;
     }
 
-    //Add slide to a presentation with a given id
     async createSlide(id, slide) {
 
-        //Step 1: Get the presentation from the database 
         let presentation = await this.getPresentationFromID(id);
-
-
-        //Step 2: Add the slide to the presentation
         presentation.slides.push(slide);
-
-
-        //Step 3: Update the presentation in the database
-        //update presentation updatePresentation(id, newTitle <String>, newShare <Number>, newSlides <Array>)
         let result = await this.changeSlides(presentation.slides, id);
         return result;
     }
 
-    /* REFACTORED */
     async changeSlides(newSlides, id) {
         const query = {
             text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
@@ -171,7 +182,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
     async getPresentationFromID(id) {
         const query = {
             text: 'SELECT * FROM public.presentations WHERE id = $1',
@@ -181,7 +191,6 @@ class Storage {
         let [result] = await this.runQueries([query],'getPresentationFromID');
         return result.rows[0];
     }
-
 
     async deleteSlide(presentation_id, slide_id) {
         let presentation = await this.getPresentationFromID(presentation_id);
@@ -194,7 +203,6 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
     async updatePresentationSlides(presentation_id, newSlides) {
         const query = {
             text: 'UPDATE public.presentations SET slides = $1 WHERE id = $2;',
@@ -205,10 +213,7 @@ class Storage {
         return result;
     }
 
-    /* REFACTORED */
-    //Add a new presentation based on username and presentation title. Returns presentation ID
     async addPresentation(username, presentation) {
-        //Just add the presentation with the username as a new entry in the database
         const query = {
             text: 'INSERT INTO public.presentations (id, username, title, share, slides) VALUES (DEFAULT, $1, $2, $3, $4) RETURNING id',
             values: [username, presentation.title, presentation.share, presentation.slides]
@@ -218,8 +223,6 @@ class Storage {
         return results[0].rows[0].id;
     }
 
-    /* REFACTORED */
-    //Get information about a user based on username. Only returns password.
     async getUser(username) {
         const query = {
             text: 'SELECT password FROM public.users WHERE username = $1',
@@ -230,8 +233,6 @@ class Storage {
         return response.rows[0]; 
     }
 
-    /* REFACTORED */
-    //Adds a user with a given username and password
     async addUser(username, password) {
         let query = {
             text: 'SELECT * FROM public.users WHERE username = $1',
@@ -246,9 +247,9 @@ class Storage {
                 values: [username, password]
             }
             await this.runQueries([query],'addUser');
-            return { msg: 'User added.' };
+            return 'ADDED';
         } else {
-            return { msg: 'User already exists' };
+            return 'EXIST';
         }
     }
 

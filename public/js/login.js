@@ -1,11 +1,21 @@
 let username = document.getElementById('username');
 let password = document.getElementById('password');
 let loginBTN = document.getElementById('loginBTN');
+let outputDiv = document.getElementById('outputDiv');
 
-loginBTN.addEventListener('click', async (e)=>{
-    e.preventDefault();
-    if(username.value.length != 0 || password.value.length != 0){
-        let authString = window.btoa(`${username.value}:${password.value}`);
+window.onload = async function(){
+    username.value = "";
+    password.value = "";
+    let sid = sessionStorage.getItem('SID');
+    if(sid === 'logout'){
+        await fetch('/api/logout', {});
+        sessionStorage.clear();
+    }
+}
+
+loginBTN.addEventListener('click', async ()=>{
+    
+        let authString = window.btoa(`${window.btoa(username.value)}:${window.btoa(password.value)}`);
         let auth = 'Basic '+authString;
         
         let headers = {
@@ -21,19 +31,12 @@ loginBTN.addEventListener('click', async (e)=>{
         }
         
         let response = await fetch(url, config);
-       
-        let token = await response.json();
-        
-
-
         if(response.status === 200){
+            let token = await response.json();
             sessionStorage.clear();
             sessionStorage.setItem('SID', token);
             location.href = 'home.html';
+        } else {
+            outputDiv.innerText = 'Enter valid username and password';
         }
-    } else {
-        console.log('Enter username and password');
-        return;
-    }
-
 });

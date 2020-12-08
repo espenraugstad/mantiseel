@@ -1,28 +1,17 @@
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-    }
-
     :root {
         --slide-width: 1200px;
         --slide-height: 672px;
 
-        --type1-box-width: 400px;
+        --type1-box-width: 00px;
         --type1-textbox-height: 300px;
 
-        --type2-box-width: 200px;
+        --type2-box-width: 0px;
         --type2-box-height: 30px;
 
-        --type3-box-width: 50px;
-        --type3-box-height: 50px;
+        --type3-box-width: 35px;
+        --type3-box-height: 35px;
     }
 
-    h1 {
-        font-family: 'IBM Plex Sans', sans-serif;
-        padding: 1vh;
-        margin-bottom: 20px;
-    }
 
     .slide-container {
         display: flex;
@@ -56,7 +45,7 @@
         background: rgb(166, 139, 129);
         align-items: center;
         justify-content: center;
-        
+        font-family: 'Poppins', sans-serif;
         text-transform: uppercase;
         font-weight: bold;
         color: white;
@@ -72,15 +61,15 @@
         display: flex;
         flex-direction: column;
         width: 50%;
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Poppins', sans-serif;
         font-size: 30px;
         padding: 50px;
         justify-content: center;
     }
 
     .type2-textbox hr {
-        height: 1ex;
         visibility: hidden;
+        height: 1ex; 
     }
 
     .type2-box{
@@ -117,17 +106,17 @@
     }
     .type3-box2{
         background: rgb(217,174,160);
-        transform: translate(calc(var(--slide-width) / 2 - var(--type3-box-width) * 2),calc(var(--slide-height) - var(--type3-box-height) - 10px));
+        transform: translate(calc(var(--slide-width) / 2 - var(--type3-box-width) * 2 + 25px),calc(var(--slide-height) - var(--type3-box-height) - 10px));
     }
     .type3-box3{
         background: rgb(166,139,129);
-        transform: translate(calc(var(--slide-width) / 2 + var(--type3-box-width) * 2),calc(var(--slide-height) - var(--type3-box-height) - 10px));
+        transform: translate(calc(var(--slide-width) / 2 + var(--type3-box-width) * 2 - 25px),calc(var(--slide-height) - var(--type3-box-height) - 10px));
     }
 
     #creator {
         padding: 20px;
         margin: auto;
-        font-family: 'Open Sans', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     #nav-buttons {

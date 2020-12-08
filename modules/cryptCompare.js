@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const secret = require('../localenv').HASH_SECRET || process.env.HASH_SECRET;
+const secret =  process.env.HASH_SECRET;
 
 function encryptPassword(password){
 

@@ -3,15 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,400;0,600;1,200;1,400&display=swap" rel="stylesheet">  
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/slides.css">
     <title>Presenting</title>
 </head>
 
 <body>
-    <div id="slideDIV">Her kommer sliden</div>
+    <div id="slideDIV"></div>
     <div id="nav-buttons">
-        <button id="prev">Previous slide</button><button id="next">Next slide</button>
+        <span class="button-basic button-small" id="prev">Previous slide</span><span class="button-basic button-small" id="next">Next slide</span>
     </div>
 </body>
 <script>
@@ -27,7 +28,6 @@
             slideIndex--;
         }
         showSlide(slideIndex);
-        console.log(slideIndex);
     });
 
     next.addEventListener('click', ()=>{
@@ -35,36 +35,22 @@
             slideIndex++;
         }
         showSlide(slideIndex);
-        console.log(slideIndex);
     })
 
-    let htmlType3 = `
-    <div class="slide-container">
-        <div class="bulletpoints">
-            <ul>
-                <li class="bullet">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eius vitae explicabo labore, voluptatibus ratione sint sed! Voluptas earum labore excepturi illum a saepe molestiae? Nemo labore officia consectetur reprehenderit? Hic.</li>
-                <li class="bullet">Point 2</li>
-                <li class="bullet">Point 3</li>
-            </ul>
-        </div>
-            <span class="type3-box1"></span>
-            <span class="type3-box2"></span>
-            <span class="type3-box3"></span>
-    </div>
-    `;
 
     window.onload = async function () {
         slides = await getSlides();
-        //console.log(JSON.parse(slides[0]));
-
-        //showSlide(slideIndex);
-        showSlide(slideIndex);
+        if(slides.length > 0){
+            showSlide(slideIndex);
+        } else {
+            slideDIV.innerHTML = '<h1>No slide found</h1>'
+        }
+        
 
     }
 
     function showSlide(slideIndex) {
         let slide = JSON.parse(slides[slideIndex]);
-        console.log(slide);
         if (slide.type === 1) {
             slideDIV.innerHTML = `
             <div class="slide-container">
@@ -77,7 +63,7 @@
             slideDIV.innerHTML = `
             <div class="slide-container">
             <img class="type2-img" src = "${slide.image}">
-            <div class="type2-textbox">${slide.text.replace(/\n/,'<hr>')}</div>
+            <div class="type2-textbox">${slide.text.replaceAll(/\n/g,'<hr>')}</div>
             <span class="type2-box"></span>
             </div>
             `;
@@ -89,7 +75,6 @@
             <ul>`;
 
             let bpoints = slide.text.split('\n');
-            console.log(bpoints);
             for(let point of bpoints){
                 html += `
                 <li class="bullet">${point}</li>
@@ -111,8 +96,6 @@
 
 
     async function getSlides() {
-        //let presentation_id = sessionStorage.getItem('pid').split('.')[0];
-        //Get pres id from url
         let presentation_id = window.location.href.split('=')[1];
       
         let token = sessionStorage.getItem('SID');
@@ -129,8 +112,13 @@
         }
 
         let result = await fetch(url, config);
-        let data = await result.json();
-        return data[0].slides;
+        if(result.status === 404){
+            return [];
+        } else {
+            let data = await result.json();
+            return data[0].slides;
+        }
+       
     }
 
 </script>
